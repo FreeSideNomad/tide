@@ -9,13 +9,16 @@ authors = [
 ]
 dependencies = [
   "alembic>=1.16.5",
+  "fastapi>=0.117.1",
   "flet==0.28.3",
+  "httpx>=0.28.1",
   "openai>=1.108.2",
   "psycopg2-binary>=2.9.10",
   "pytest>=8.4.2",
   "pytest-cov>=7.0.0",
   "python-dotenv>=1.1.1",
   "sqlalchemy>=2.0.43",
+  "uvicorn[standard]>=0.36.0",
 ]
 
 [tool.flet]

@@ -1,0 +1,192 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: '3.13'
+
+jobs:
+  lint-and-format:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check code formatting with black
+        run: uv run black --check --diff src/ tests/
+
+      - name: Lint with ruff
+        run: uv run ruff check src/ tests/
+
+      - name: Type checking (if mypy added later)
+        run: echo "Type checking placeholder - add mypy when ready"
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run unit tests
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: uv run pytest tests/unit/ -v --cov=src --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: tide_password
+          POSTGRES_USER: tide_user
+          POSTGRES_DB: tide_db_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://tide_user:tide_password@localhost:5432/tide_db_test
+          OPENAI_API_KEY: "test-key"
+        run: uv run pytest tests/integration/ -v
+
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Start application with docker-compose
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: |
+          docker-compose up -d postgres
+          sleep 10
+          docker-compose up -d app
+          sleep 15
+
+      - name: Run E2E tests
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: uv run pytest tests/e2e/ -v
+
+      - name: Stop services
+        if: always()
+        run: docker-compose down
+
+  build-and-test-docker:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t tide:test .
+
+      - name: Test Docker image
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: |
+          docker-compose -f docker-compose.yml up -d postgres
+          sleep 10
+          docker-compose -f docker-compose.yml --profile test run --rm test
+          docker-compose down
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run safety check for known vulnerabilities
+        run: uv run pip install safety && uv run safety check
+        continue-on-error: true
+
+      - name: Run bandit security linter
+        run: uv run pip install bandit && uv run bandit -r src/ -f json -o bandit-report.json
+        continue-on-error: true
+
+      - name: Upload bandit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bandit-results
+          path: bandit-report.json

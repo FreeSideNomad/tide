@@ -90,7 +90,14 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 - **ORM**: SQLAlchemy for maintainability and type safety
 - **AI Integration**: OpenAI API with cost management
 - **Authentication**: Google OAuth or Microsoft OAuth
-- **Testing**: Pytest for unit tests and integration tests, standard Python testing practices for Flet applications
+- **Package Management**: uv for fast Python dependency management
+- **Testing**: Pytest with comprehensive test suite (unit, integration, E2E)
+- **Code Quality**: Black (formatting), Ruff (linting), Safety (security), Bandit (security)
+- **Browser Testing**: Selenium and Playwright for E2E automation
+- **Containerization**: Docker and Docker Compose for development and testing
+- **CI/CD**: GitHub Actions with comprehensive pipeline
+- **Development Automation**: Makefile and shell scripts for workflow automation
+- **Git Integration**: Pre-commit hooks for quality gates
 - **Deployment**: GitHub Actions + cloud provider
 
 ### Technology Guidelines
@@ -219,3 +226,197 @@ Always prioritize:
 - Use mocking for external dependencies
 - Maintain high test coverage for core application functionality
 - Follow standard Python testing practices adapted for Flet applications
+
+## Development Workflow and Automation
+
+### Local Development Tools
+
+The project includes comprehensive automation tools for consistent development experience:
+
+#### Makefile Commands
+Use `make` for all common development tasks:
+
+```bash
+# Essential workflow commands
+make help           # Show all available commands
+make install        # Install dependencies with uv
+make setup-hooks    # Configure Git hooks (one-time setup)
+
+# Development cycle
+make dev            # Start development server (Flet web mode)
+make dev-docker     # Start full stack with Docker Compose
+
+# Code quality (run frequently)
+make quick-check    # Fast validation (~10 seconds)
+make format         # Auto-format code with black
+make lint           # Check with ruff linter
+make lint-fix       # Auto-fix linting issues
+
+# Testing
+make test-unit      # Unit tests only
+make test-int       # Integration tests (requires Docker)
+make test-e2e       # End-to-end browser tests
+make coverage       # Test coverage report
+
+# Comprehensive validation
+make validate       # Full validation before commits
+make ci             # Simulate CI pipeline
+```
+
+#### Validation Scripts
+
+**Quick Check** (`./scripts/quick-check.sh` or `make quick-check`):
+- Fast feedback loop for active development (~10 seconds)
+- Code formatting, basic linting, imports, essential tests
+- Run frequently during development
+
+**Full Validation** (`./scripts/validate.sh` or `make validate`):
+- Comprehensive checks before committing (2-5 minutes)
+- Code quality, security scanning, all test types, coverage analysis
+- Matches CI pipeline requirements
+
+**Environment Setup** (`./scripts/dev-setup.sh`):
+- One-command setup for new developers
+- Installs uv, configures environment, sets up Git hooks
+- Validates setup and provides next steps
+
+### Git Hooks Integration
+
+Automated quality gates prevent issues from reaching the repository:
+
+#### Pre-commit Hook
+- **Trigger**: Before each `git commit`
+- **Action**: Runs `quick-check.sh` for fast validation
+- **Purpose**: Catch basic issues immediately
+- **Bypass**: `git commit --no-verify` (use sparingly)
+
+#### Pre-push Hook
+- **Trigger**: Before `git push` to remote
+- **Action**: Runs full validation (excluding E2E tests)
+- **Purpose**: Ensure comprehensive quality before sharing code
+- **Bypass**: `git push --no-verify` (use sparingly)
+
+#### Commit Message Hook
+- **Trigger**: During commit message creation
+- **Action**: Validates conventional commit format
+- **Required Format**: `type(scope): description`
+- **Examples**:
+  - `feat: add user authentication`
+  - `fix(ui): resolve button alignment issue`
+  - `docs: update installation guide`
+
+### Recommended Development Workflow
+
+#### 1. Initial Setup (One-time)
+```bash
+./scripts/dev-setup.sh     # Automated setup
+# OR manually:
+make install
+make setup-hooks
+cp .env.example .env       # Add your OPENAI_API_KEY
+```
+
+#### 2. Daily Development Cycle
+```bash
+# Start development
+make dev                   # Flet development server
+# OR
+make dev-docker           # Full stack with PostgreSQL
+
+# Make code changes...
+
+# Quick validation (run frequently)
+make quick-check          # ~10 seconds feedback
+
+# Continue development...
+```
+
+#### 3. Before Committing
+```bash
+# Comprehensive validation
+make validate             # 2-5 minutes, matches CI
+
+# If validation passes:
+git add .
+git commit -m "feat: implement new feature"  # Hooks run automatically
+```
+
+#### 4. Before Pushing
+```bash
+# Optional: simulate CI pipeline
+make ci
+
+# Push (hooks run automatically)
+git push origin feature-branch
+```
+
+### Docker Integration
+
+All tools automatically detect Docker availability:
+
+**With Docker Available**:
+- Full integration tests with PostgreSQL
+- E2E tests with browser automation
+- Containerized build validation
+- Complete CI pipeline simulation
+
+**Without Docker**:
+- Graceful degradation with warnings
+- Unit tests and code quality checks still run
+- Local-only validation mode
+
+### Code Quality Standards
+
+#### Automated Enforcement
+- **Black**: Code formatting (zero configuration)
+- **Ruff**: Fast Python linter with auto-fix
+- **Safety**: Dependency vulnerability scanning
+- **Bandit**: Security linting for common issues
+- **Pytest**: Test execution with coverage reporting
+
+#### Coverage Requirements
+- **Minimum**: 80% line and branch coverage
+- **Target**: 90% for business logic
+- **Measurement**: Unit tests only (integration tests separate)
+- **Reporting**: HTML and XML formats generated
+
+#### Security Scanning
+- **Dependency vulnerabilities**: `safety` check against known CVEs
+- **Code security**: `bandit` static analysis for security anti-patterns
+- **API key protection**: Automated detection of exposed secrets
+- **CI integration**: Security scans run on every PR
+
+### Troubleshooting Development Issues
+
+#### Common Commands for Issue Resolution
+```bash
+# Fix formatting and linting
+make format && make lint-fix
+
+# Clean environment and rebuild
+make clean && make install
+
+# Test specific components
+make test-unit              # Fast unit tests
+uv run pytest tests/unit/test_config.py -v  # Specific test file
+
+# Debug failed validation
+./scripts/validate.sh --skip-e2e  # Skip slow E2E tests
+```
+
+#### Bypass Hooks When Needed
+```bash
+# Emergency commits (use sparingly)
+git commit --no-verify -m "fix: urgent hotfix"
+git push --no-verify
+```
+
+### Integration with IDE
+
+The validation tools integrate with common IDEs:
+
+- **VS Code**: Works with Python extension, pytest integration
+- **PyCharm**: Compatible with built-in test runners and code inspection
+- **Command Line**: Full functionality via terminal/shell
+
+All tools use standard Python tooling conventions for maximum compatibility.

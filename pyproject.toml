@@ -40,7 +40,9 @@ path = "src"
 dev-dependencies = [
     "black>=25.9.0",
     "flet[all]==0.28.3",
+    "playwright>=1.55.0",
     "ruff>=0.13.1",
+    "selenium>=4.35.0",
 ]
 
 [tool.poetry]

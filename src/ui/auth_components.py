@@ -47,24 +47,52 @@ class GoogleSignInButton(ft.Container):
         self.current_session_id = None
         self.polling_thread = None
 
-        # Create button content
+        # Create Google logo representation following Google's color scheme
+        self.google_logo = ft.Container(
+            content=ft.Stack(
+                controls=[
+                    # Background circle
+                    ft.Container(
+                        width=18,
+                        height=18,
+                        border_radius=ft.border_radius.all(9),
+                        bgcolor="#FFFFFF",
+                        border=ft.border.all(1, "#4285F4"),
+                    ),
+                    # Google "G" in proper colors
+                    ft.Container(
+                        width=18,
+                        height=18,
+                        alignment=ft.alignment.center,
+                        content=ft.Text(
+                            "G",
+                            size=12,
+                            weight=ft.FontWeight.W_500,
+                            color="#4285F4",  # Google Blue
+                            text_align=ft.TextAlign.CENTER,
+                        ),
+                    ),
+                ]
+            ),
+            width=20,
+            height=20,
+            alignment=ft.alignment.center,
+        )
+
+        # Create button content following Google's branding guidelines
         self.button_content = ft.Row(
             controls=[
-                # Google logo (using icon for now, replace with actual logo in production)
-                ft.Icon(
-                    name=ft.Icons.ACCOUNT_CIRCLE,
-                    color=ft.Colors.WHITE,
-                    size=20,
-                ),
+                self.google_logo,
                 ft.Text(
                     "Sign in with Google",
-                    color=ft.Colors.WHITE,
-                    size=16,
+                    color="#1F1F1F",  # Google's specified text color
+                    size=14,
                     weight=ft.FontWeight.W_500,
+                    font_family="Roboto",  # Google's required font
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            spacing=8,
+            spacing=12,  # Google recommended spacing
         )
 
         self.loading_content = ft.Row(
@@ -73,24 +101,26 @@ class GoogleSignInButton(ft.Container):
                     width=20,
                     height=20,
                     stroke_width=2,
-                    color=ft.Colors.WHITE,
+                    color="#1F1F1F",  # Match Google's text color
                 ),
                 ft.Text(
                     "Signing in...",
-                    color=ft.Colors.WHITE,
-                    size=16,
+                    color="#1F1F1F",  # Google's specified text color
+                    size=14,
                     weight=ft.FontWeight.W_500,
+                    font_family="Roboto",
                 ),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-            spacing=8,
+            spacing=12,
         )
 
-        # Initialize container with Google's recommended styling
+        # Initialize container with Google's light theme branding guidelines
         super().__init__(
             content=self.button_content,
-            bgcolor=ft.Colors.BLUE_600,  # Google blue
-            border_radius=ft.border_radius.all(8),
+            bgcolor="#FFFFFF",  # Google's light theme background
+            border=ft.border.all(1, "#747775"),  # Google's specified border color
+            border_radius=ft.border_radius.all(4),  # Google recommended border radius
             padding=ft.padding.symmetric(horizontal=24, vertical=12),
             ink=True,
             on_click=self._handle_click,
@@ -144,10 +174,12 @@ class GoogleSignInButton(ft.Container):
 
         # Update button styling for loading state
         if loading:
-            self.bgcolor = ft.Colors.BLUE_400  # Slightly faded
+            self.bgcolor = "#F5F5F5"  # Slightly faded white for loading
+            self.border = ft.border.all(1, "#DADCE0")  # Lighter border when loading
             self.on_click = None  # Disable clicks during loading
         else:
-            self.bgcolor = ft.Colors.BLUE_600
+            self.bgcolor = "#FFFFFF"  # Google's light theme background
+            self.border = ft.border.all(1, "#747775")  # Google's specified border
             self.on_click = self._handle_click
 
         if hasattr(self, "update"):

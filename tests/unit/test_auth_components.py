@@ -25,7 +25,7 @@ class TestGoogleSignInButton:
             assert button is not None
             assert button.is_loading is False
             assert button.current_state is None
-            assert button.bgcolor == ft.Colors.BLUE_600
+            assert button.bgcolor == "#FFFFFF"  # Google's light theme background
             assert button.tooltip == "Sign in with your Google account"
 
     def test_initialization_with_callbacks(self):
@@ -49,10 +49,10 @@ class TestGoogleSignInButton:
             # Check button content is a Row
             assert isinstance(button.button_content, ft.Row)
 
-            # Check content has icon and text
+            # Check content has Google logo and text
             controls = button.button_content.controls
             assert len(controls) == 2
-            assert isinstance(controls[0], ft.Icon)
+            assert isinstance(controls[0], ft.Container)  # Google logo container
             assert isinstance(controls[1], ft.Text)
             assert controls[1].value == "Sign in with Google"
 
@@ -129,7 +129,7 @@ class TestGoogleSignInButton:
 
             assert button.is_loading is True
             assert button.content == button.loading_content
-            assert button.bgcolor == ft.Colors.BLUE_400
+            assert button.bgcolor == "#F5F5F5"  # Google's loading state background
             assert button.on_click is None
 
     def test_set_loading_state_false(self):
@@ -142,7 +142,7 @@ class TestGoogleSignInButton:
 
             assert button.is_loading is False
             assert button.content == button.button_content
-            assert button.bgcolor == ft.Colors.BLUE_600
+            assert button.bgcolor == "#FFFFFF"  # Google's light theme background
             assert button.on_click == button._handle_click
 
     def test_reset_state(self):

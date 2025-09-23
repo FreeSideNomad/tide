@@ -23,12 +23,14 @@
 
 The project wiki is integrated as a git submodule at `docs/wiki/`. This provides direct access to all wiki content within the repository.
 
-### Updating Wiki Content
+### Wiki Workflow
 
-To pull the latest wiki changes:
-```bash
-git submodule update --remote docs/wiki
-```
+**📖 See [WIKI_WORKFLOW.md](WIKI_WORKFLOW.md) for complete documentation on working with wiki content.**
+
+#### Quick Reference:
+- **Get latest wiki changes**: `git submodule update --remote docs/wiki`
+- **Commit wiki changes**: `cd docs/wiki && git add . && git commit -m "message" && git push origin master`
+- **Update main repo reference**: `git add docs/wiki && git commit -m "docs: update wiki submodule" && git push origin main`
 
 ### Wiki Files
 

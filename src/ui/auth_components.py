@@ -352,12 +352,14 @@ class AuthenticationPage(ft.Column):
     def _on_auth_success(self, user_info: Dict[str, Any]):
         """Handle authentication success."""
         # Show success message with loading indicator
-        self.status_text.value = "✓ Authentication successful! Loading your dashboard..."
+        self.status_text.value = (
+            "✓ Authentication successful! Loading your dashboard..."
+        )
         self.status_text.color = ft.Colors.GREEN_600
         self.status_text.visible = True
 
         # Add a progress ring to show loading
-        if hasattr(self, 'controls') and len(self.controls) > 0:
+        if hasattr(self, "controls") and len(self.controls) > 0:
             # Insert a progress indicator before the status text
             progress_row = ft.Row(
                 controls=[

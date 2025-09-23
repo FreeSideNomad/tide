@@ -3,7 +3,7 @@ Unit tests for main application functionality.
 """
 
 import flet as ft
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from src.main import main, TideApp
 
 
@@ -22,7 +22,9 @@ class TestMainApp:
 
     @patch("src.main.start_auth_server")
     @patch("src.ui.auth_components.AuthenticationPage")
-    def test_main_sets_up_navigation(self, mock_auth_page, mock_auth_server, mock_flet_page):
+    def test_main_sets_up_navigation(
+        self, mock_auth_page, mock_auth_server, mock_flet_page
+    ):
         """Test that main function sets up route-based navigation."""
         main(mock_flet_page)
 
@@ -84,7 +86,9 @@ class TestTideApp:
 
     @patch("src.main.start_auth_server")
     @patch("src.ui.auth_components.AuthenticationPage")
-    def test_route_change_to_auth(self, mock_auth_page, mock_auth_server, mock_flet_page):
+    def test_route_change_to_auth(
+        self, mock_auth_page, mock_auth_server, mock_flet_page
+    ):
         """Test route change to authentication page."""
         mock_flet_page.route = "/auth"
         app = TideApp(mock_flet_page)
@@ -99,7 +103,9 @@ class TestTideApp:
 
     @patch("src.main.start_auth_server")
     @patch("src.main.DashboardPage")
-    def test_route_change_to_dashboard_with_user(self, mock_dashboard, mock_auth_server, mock_flet_page):
+    def test_route_change_to_dashboard_with_user(
+        self, mock_dashboard, mock_auth_server, mock_flet_page
+    ):
         """Test route change to dashboard when user is authenticated."""
         mock_flet_page.route = "/dashboard"
         app = TideApp(mock_flet_page)
@@ -113,7 +119,9 @@ class TestTideApp:
         mock_flet_page.views.append.assert_called()
 
     @patch("src.main.start_auth_server")
-    def test_route_change_to_dashboard_without_user_redirects(self, mock_auth_server, mock_flet_page):
+    def test_route_change_to_dashboard_without_user_redirects(
+        self, mock_auth_server, mock_flet_page
+    ):
         """Test route change to dashboard without user redirects to auth."""
         mock_flet_page.route = "/dashboard"
         app = TideApp(mock_flet_page)
@@ -126,7 +134,9 @@ class TestTideApp:
         mock_flet_page.go.assert_called_with("/auth")
 
     @patch("src.main.start_auth_server")
-    def test_auth_success_navigates_to_dashboard(self, mock_auth_server, mock_flet_page):
+    def test_auth_success_navigates_to_dashboard(
+        self, mock_auth_server, mock_flet_page
+    ):
         """Test successful authentication navigates to dashboard."""
         app = TideApp(mock_flet_page)
         user_info = {"user_id": "test", "name": "Test User"}

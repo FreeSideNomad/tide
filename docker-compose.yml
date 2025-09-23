@@ -51,7 +51,18 @@ services:
       - ./coverage:/app/coverage
     command: >
       sh -c "
+        echo 'Waiting for postgres to be ready...' &&
+        for i in {1..30}; do
+          if uv run python -c 'import psycopg2; psycopg2.connect(host=\"postgres\", user=\"tide_user\", password=\"tide_password\").close()' 2>/dev/null; then
+            echo 'Postgres is ready'
+            break
+          fi
+          echo 'Waiting for postgres...'
+          sleep 2
+        done &&
+        echo 'Creating test database...' &&
         uv run python -c 'import psycopg2; conn = psycopg2.connect(host=\"postgres\", user=\"tide_user\", password=\"tide_password\"); conn.autocommit = True; cur = conn.cursor(); cur.execute(\"CREATE DATABASE tide_db_test\"); conn.close()' || true &&
+        echo 'Running tests...' &&
         uv run pytest --cov=src --cov-report=html:/app/coverage --cov-report=xml:/app/coverage/coverage.xml --cov-report=term-missing
       "
     profiles:

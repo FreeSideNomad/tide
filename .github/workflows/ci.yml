@@ -155,7 +155,7 @@ jobs:
           OPENAI_API_KEY: "test-key"
         run: |
           docker compose -f docker-compose.yml up -d postgres
-          sleep 10
+          sleep 15
           docker compose -f docker-compose.yml --profile test run --rm test
           docker compose down
 

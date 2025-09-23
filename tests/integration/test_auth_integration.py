@@ -22,6 +22,7 @@ class TestAuthenticationIntegration:
         # Create a mock page
         mock_page = MagicMock(spec=ft.Page)
         mock_page.session = MagicMock()
+        mock_page.views = MagicMock()
 
         # Run main function
         main(mock_page)
@@ -31,8 +32,10 @@ class TestAuthenticationIntegration:
         assert mock_page.window.width == 800
         assert mock_page.window.height == 600
 
-        # Verify page content was added
-        mock_page.add.assert_called_once()
+        # Verify navigation setup and initial route
+        assert mock_page.on_route_change is not None
+        assert mock_page.on_view_pop is not None
+        mock_page.go.assert_called_once_with("/auth")
 
     @patch("src.ui.auth_components.webbrowser")
     def test_oauth_flow_integration(self, mock_webbrowser):

@@ -3,7 +3,7 @@ Unit tests for main application functionality.
 """
 
 import flet as ft
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from src.main import main
 
 
@@ -48,8 +48,16 @@ class TestMainApp:
         assert fab.icon == ft.Icons.ADD
         assert fab.on_click is not None
 
-    def test_increment_functionality(self, mock_flet_page):
+    @patch("flet.Text")
+    def test_increment_functionality(self, mock_text_class, mock_flet_page):
         """Test that increment functionality works."""
+        # Mock the Text control
+        mock_counter = Mock()
+        mock_counter.data = 0
+        mock_counter.value = "0"
+        mock_counter.update = Mock()
+        mock_text_class.return_value = mock_counter
+
         main(mock_flet_page)
 
         # Get the floating action button
@@ -61,8 +69,10 @@ class TestMainApp:
         # Call the increment function
         fab.on_click(mock_event)
 
-        # Note: More detailed testing would require access to the counter object
-        # This is a basic test to ensure the callback doesn't raise an exception
+        # Verify the counter was incremented
+        assert mock_counter.data == 1
+        assert mock_counter.value == "1"
+        mock_counter.update.assert_called_once()
 
 
 class TestCounterComponent:
@@ -76,8 +86,16 @@ class TestCounterComponent:
         # For now, we test that the function executes without error
         assert mock_flet_page.add.called
 
-    def test_counter_increment(self, mock_flet_page):
+    @patch("flet.Text")
+    def test_counter_increment(self, mock_text_class, mock_flet_page):
         """Test counter increment behavior."""
+        # Mock the Text control
+        mock_counter = Mock()
+        mock_counter.data = 0
+        mock_counter.value = "0"
+        mock_counter.update = Mock()
+        mock_text_class.return_value = mock_counter
+
         main(mock_flet_page)
 
         fab = mock_flet_page.floating_action_button
@@ -87,4 +105,7 @@ class TestCounterComponent:
         for i in range(5):
             fab.on_click(mock_event)
 
-        # If we get here without exception, the increment logic works
+        # Verify final count
+        assert mock_counter.data == 5
+        assert mock_counter.value == "5"
+        assert mock_counter.update.call_count == 5

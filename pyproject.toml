@@ -36,8 +36,8 @@ copyright = "Copyright (C) 2025 by Flet"
 [tool.flet.app]
 path = "src"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "black>=25.9.0",
     "flet[all]==0.28.3",
     "playwright>=1.55.0",

@@ -7,7 +7,7 @@ import pytest
 import asyncio
 import requests
 import time
-from playwright.async_api import async_playwright, Page, Browser
+from playwright.async_api import async_playwright, Page
 
 
 class TestTideAppE2E:
@@ -42,9 +42,7 @@ class TestTideAppE2E:
         """Test that the application loads without errors."""
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(
-                viewport={"width": 1280, "height": 720}
-            )
+            context = await browser.new_context(viewport={"width": 1280, "height": 720})
             page = await context.new_page()
 
             try:
@@ -59,12 +57,14 @@ class TestTideAppE2E:
                 assert "Tide" in title or "Flet" in title
 
                 # Verify Flet framework is loaded
-                flet_loaded = await page.evaluate("""
+                flet_loaded = await page.evaluate(
+                    """
                     () => {
                         return typeof _flutter !== 'undefined' ||
                                document.querySelector('flutter-view') !== null;
                     }
-                """)
+                """
+                )
 
                 assert flet_loaded, "Flet/Flutter framework not loaded"
 
@@ -94,28 +94,32 @@ class TestTideAppE2E:
 
                 # Look for authentication page elements
                 # This is more flexible than strict element matching
-                page_content = await page.content()
 
                 # Check if we can find authentication-related elements
                 # Flet apps may render differently, so we check for various indicators
-                has_auth_content = await page.evaluate("""
+                has_auth_content = await page.evaluate(
+                    """
                     () => {
                         // Look for any text that suggests this is an auth page
                         const bodyText = document.body.innerText.toLowerCase();
                         const authKeywords = ['sign', 'auth', 'login', 'google', 'tide', 'dbt'];
                         return authKeywords.some(keyword => bodyText.includes(keyword));
                     }
-                """)
+                """
+                )
 
                 # Also check for interactive elements that might be buttons
-                interactive_elements = await page.locator("[role='button'], button, [onclick], [onmousedown]").count()
+                interactive_elements = await page.locator(
+                    "[role='button'], button, [onclick], [onmousedown]"
+                ).count()
 
                 # Take screenshot for visual verification
                 await page.screenshot(path="tests/e2e/screenshots/auth-page.png")
 
                 # Verify we have some authentication content or interactive elements
-                assert has_auth_content or interactive_elements > 0, \
-                    "Could not find authentication page content or interactive elements"
+                assert (
+                    has_auth_content or interactive_elements > 0
+                ), "Could not find authentication page content or interactive elements"
 
             finally:
                 await browser.close()
@@ -134,7 +138,8 @@ class TestTideAppE2E:
                 await page.wait_for_timeout(3000)
 
                 # Get comprehensive rendering information
-                render_info = await page.evaluate("""
+                render_info = await page.evaluate(
+                    """
                     () => {
                         return {
                             hasFlutterView: !!document.querySelector('flutter-view'),
@@ -148,7 +153,8 @@ class TestTideAppE2E:
                             buildMode: document.body.getAttribute('flt-build-mode')
                         };
                     }
-                """)
+                """
+                )
 
                 print(f"Render info: {render_info}")
 
@@ -156,7 +162,9 @@ class TestTideAppE2E:
                 assert render_info["hasFlutterView"], "No flutter-view found"
                 assert render_info["hasGlassPane"], "No glass pane found"
                 assert render_info["flutterAvailable"], "Flutter not available"
-                assert render_info["semanticsPlaceholder"], "No semantics placeholder for accessibility"
+                assert render_info[
+                    "semanticsPlaceholder"
+                ], "No semantics placeholder for accessibility"
 
                 # Take screenshot showing the rendered app
                 await page.screenshot(path="tests/e2e/screenshots/flet-framework.png")
@@ -178,12 +186,14 @@ class TestTideAppE2E:
                 await page.wait_for_timeout(3000)
 
                 # Check that accessibility placeholder exists
-                placeholder_exists = await page.evaluate("""
+                placeholder_exists = await page.evaluate(
+                    """
                     () => {
                         const placeholder = document.querySelector('flt-semantics-placeholder');
                         return placeholder !== null;
                     }
-                """)
+                """
+                )
 
                 assert placeholder_exists, "Flet accessibility placeholder not found"
 
@@ -191,7 +201,9 @@ class TestTideAppE2E:
                 accessibility_activated = await self.enable_flet_accessibility(page)
 
                 # Check if semantic elements became available
-                semantic_elements_count = await page.locator("flt-semantics *, flt-semantics-host *").count()
+                semantic_elements_count = await page.locator(
+                    "flt-semantics *, flt-semantics-host *"
+                ).count()
 
                 # Take screenshot showing accessibility state
                 await page.screenshot(path="tests/e2e/screenshots/accessibility.png")
@@ -231,7 +243,9 @@ class TestTideAppE2E:
                     print(f"Console {msg.type}: {msg.text}")
 
                 # Assert no severe errors
-                assert len(errors) == 0, f"JavaScript errors found: {[msg.text for msg in errors]}"
+                assert (
+                    len(errors) == 0
+                ), f"JavaScript errors found: {[msg.text for msg in errors]}"
 
             finally:
                 await browser.close()
@@ -267,8 +281,9 @@ class TestTideAppE2E:
 
                     # Verify content is present and accessible
                     body_content = await page.locator("body").text_content()
-                    assert body_content is not None and len(body_content.strip()) > 0, \
-                        f"No content found on {viewport['name']} viewport"
+                    assert (
+                        body_content is not None and len(body_content.strip()) > 0
+                    ), f"No content found on {viewport['name']} viewport"
 
                 finally:
                     await context.close()
@@ -280,7 +295,8 @@ class TestTideAppE2E:
         print("🔧 Enabling Flet accessibility features...")
 
         # Try to activate accessibility through the semantics placeholder
-        accessibility_result = await page.evaluate("""
+        accessibility_result = await page.evaluate(
+            """
             () => {
                 const placeholder = document.querySelector('flt-semantics-placeholder');
                 if (placeholder) {
@@ -300,7 +316,8 @@ class TestTideAppE2E:
                 }
                 return 'No accessibility placeholder found';
             }
-        """)
+        """
+        )
 
         print(f"   Accessibility result: {accessibility_result}")
 
@@ -308,11 +325,15 @@ class TestTideAppE2E:
         await page.wait_for_timeout(3000)
 
         # Check for semantic elements
-        semantic_elements_count = await page.locator("flt-semantics *, flt-semantics-host *").count()
+        semantic_elements_count = await page.locator(
+            "flt-semantics *, flt-semantics-host *"
+        ).count()
         print(f"   Semantic elements available: {semantic_elements_count}")
 
         # Also check for aria elements
-        aria_elements_count = await page.locator("[aria-label], [role], [aria-describedby]").count()
+        aria_elements_count = await page.locator(
+            "[aria-label], [role], [aria-describedby]"
+        ).count()
         print(f"   Aria elements available: {aria_elements_count}")
 
         return semantic_elements_count > 0 or aria_elements_count > 0
@@ -342,10 +363,13 @@ class TestPerformanceAndMetrics:
                 print(f"Page load time: {load_time:.2f} seconds")
 
                 # Assert reasonable load time (10 seconds is generous for development)
-                assert load_time < 10, f"Page took too long to load: {load_time:.2f} seconds"
+                assert (
+                    load_time < 10
+                ), f"Page took too long to load: {load_time:.2f} seconds"
 
                 # Get performance metrics
-                metrics = await page.evaluate("""
+                metrics = await page.evaluate(
+                    """
                     () => {
                         const perf = performance.getEntriesByType('navigation')[0];
                         return {
@@ -354,7 +378,8 @@ class TestPerformanceAndMetrics:
                             firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0
                         };
                     }
-                """)
+                """
+                )
 
                 print(f"Performance metrics: {metrics}")
 
@@ -367,5 +392,6 @@ class TestPerformanceAndMetrics:
 def ensure_screenshot_dir():
     """Ensure screenshot directory exists."""
     import os
+
     screenshot_dir = "tests/e2e/screenshots"
     os.makedirs(screenshot_dir, exist_ok=True)

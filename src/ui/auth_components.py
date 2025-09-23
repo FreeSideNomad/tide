@@ -5,7 +5,6 @@ Implements Google Sign In button following Google's branding guidelines.
 
 import flet as ft
 import webbrowser
-import asyncio
 import threading
 import time
 import logging
@@ -192,6 +191,7 @@ class GoogleSignInButton(ft.Container):
 
                     # Check auth status
                     import httpx
+
                     url = f"http://127.0.0.1:8000/auth/status/{self.current_session_id}"
                     logger.info(f"📞 Polling attempt {attempt}: {url}")
 
@@ -205,19 +205,27 @@ class GoogleSignInButton(ft.Container):
                         if result.get("success"):
                             # Authentication succeeded
                             user_info = result.get("user_info", {})
-                            logger.info(f"✅ Authentication succeeded for: {user_info.get('name', 'Unknown')}")
+                            logger.info(
+                                f"✅ Authentication succeeded for: {user_info.get('name', 'Unknown')}"
+                            )
                             self._handle_auth_success(user_info)
                             break
                         elif result.get("status") == "not_found":
                             # Session expired or not found
                             logger.error("❌ Session not found")
-                            self._handle_error("Authentication session expired. Please try again.")
+                            self._handle_error(
+                                "Authentication session expired. Please try again."
+                            )
                             break
                         else:
-                            logger.info(f"⏳ Still pending (attempt {attempt}/{max_attempts})")
+                            logger.info(
+                                f"⏳ Still pending (attempt {attempt}/{max_attempts})"
+                            )
                             # Otherwise, continue polling (status: "pending")
                     else:
-                        logger.warning(f"⚠️ Unexpected response status: {response.status_code}")
+                        logger.warning(
+                            f"⚠️ Unexpected response status: {response.status_code}"
+                        )
 
                 except Exception as e:
                     # Continue polling on error, but limit attempts
@@ -258,7 +266,7 @@ class AuthenticationPage(ft.Column):
         self,
         on_auth_success: Optional[Callable[[Dict[str, Any]], None]] = None,
         on_auth_error: Optional[Callable[[str], None]] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize authentication page.

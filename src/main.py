@@ -119,7 +119,7 @@ def main(page: ft.Page):
     Main application function for Tide.
     Sets up the application with authentication and dashboard.
     """
-    app = TideApp(page)
+    TideApp(page)
 
 
 if __name__ == "__main__":

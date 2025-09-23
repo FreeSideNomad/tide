@@ -13,7 +13,12 @@ class DashboardPage(ft.Column):
     Displays user information and navigation to DBT skills.
     """
 
-    def __init__(self, user_info: Optional[dict] = None, on_sign_out: Optional[Callable] = None, **kwargs):
+    def __init__(
+        self,
+        user_info: Optional[dict] = None,
+        on_sign_out: Optional[Callable] = None,
+        **kwargs,
+    ):
         """
         Initialize dashboard page.
 
@@ -67,11 +72,15 @@ class DashboardPage(ft.Column):
                             size=24,
                             weight=ft.FontWeight.BOLD,
                         ),
-                        ft.Text(
-                            user_email,
-                            size=14,
-                            color=ft.Colors.GREY_600,
-                        ) if user_email else ft.Container(),
+                        (
+                            ft.Text(
+                                user_email,
+                                size=14,
+                                color=ft.Colors.GREY_600,
+                            )
+                            if user_email
+                            else ft.Container()
+                        ),
                     ],
                     spacing=5,
                 ),
@@ -104,7 +113,6 @@ class DashboardPage(ft.Column):
                     text_align=ft.TextAlign.CENTER,
                 ),
                 ft.Container(height=30),  # Spacing
-
                 # Feature cards (placeholder for future DBT modules)
                 ft.Row(
                     controls=[
@@ -112,13 +120,13 @@ class DashboardPage(ft.Column):
                             "Distress Tolerance",
                             "Crisis survival skills and distress management",
                             ft.Icons.CRISIS_ALERT,
-                            coming_soon=False
+                            coming_soon=False,
                         ),
                         self._create_feature_card(
                             "Mindfulness",
                             "Present moment awareness and grounding techniques",
                             ft.Icons.SELF_IMPROVEMENT,
-                            coming_soon=True
+                            coming_soon=True,
                         ),
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -131,13 +139,13 @@ class DashboardPage(ft.Column):
                             "Emotion Regulation",
                             "Managing difficult emotions effectively",
                             ft.Icons.FAVORITE,
-                            coming_soon=True
+                            coming_soon=True,
                         ),
                         self._create_feature_card(
                             "Interpersonal Effectiveness",
                             "Building healthy relationships and communication",
                             ft.Icons.PEOPLE,
-                            coming_soon=True
+                            coming_soon=True,
                         ),
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -153,7 +161,9 @@ class DashboardPage(ft.Column):
             width=600,
         )
 
-    def _create_feature_card(self, title: str, description: str, icon: str, coming_soon: bool = False) -> ft.Container:
+    def _create_feature_card(
+        self, title: str, description: str, icon: str, coming_soon: bool = False
+    ) -> ft.Container:
         """Create a feature card for DBT modules."""
         card_content = ft.Column(
             controls=[

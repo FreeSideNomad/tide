@@ -8,8 +8,8 @@ import threading
 import uuid
 import logging
 from typing import Dict, Optional, Any
-from fastapi import FastAPI, Request, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 import httpx
 import uvicorn
 from src.config import (
@@ -74,14 +74,18 @@ class AuthServer:
                     logger.error(f"OAuth error received: {error}")
                     return HTMLResponse(
                         content=self._create_error_page(f"OAuth error: {error}"),
-                        status_code=400
+                        status_code=400,
                     )
 
                 if not code or not state:
-                    logger.error(f"Missing parameters - code: {bool(code)}, state: {bool(state)}")
+                    logger.error(
+                        f"Missing parameters - code: {bool(code)}, state: {bool(state)}"
+                    )
                     return HTMLResponse(
-                        content=self._create_error_page("Missing authorization code or state"),
-                        status_code=400
+                        content=self._create_error_page(
+                            "Missing authorization code or state"
+                        ),
+                        status_code=400,
                     )
 
                 # Find the corresponding auth session
@@ -90,7 +94,9 @@ class AuthServer:
 
                 session_data = None
                 for session_id, session in self.auth_sessions.items():
-                    logger.info(f"Checking session {session_id}: {session.get('state')}")
+                    logger.info(
+                        f"Checking session {session_id}: {session.get('state')}"
+                    )
                     if session.get("state") == state:
                         session_data = session
                         logger.info(f"✅ Found matching session: {session_id}")
@@ -99,13 +105,17 @@ class AuthServer:
                 if not session_data:
                     logger.error("❌ No matching session found for state")
                     return HTMLResponse(
-                        content=self._create_error_page("Invalid or expired authentication session"),
-                        status_code=400
+                        content=self._create_error_page(
+                            "Invalid or expired authentication session"
+                        ),
+                        status_code=400,
                     )
 
                 # Validate state parameter
                 expected_state = session_data["state"]
-                logger.info(f"Validating state - received: {state}, expected: {expected_state}")
+                logger.info(
+                    f"Validating state - received: {state}, expected: {expected_state}"
+                )
                 if not self.oauth_service.validate_state(state, expected_state):
                     logger.error("❌ State validation failed")
                     raise CSRFError("Invalid state parameter")
@@ -122,7 +132,7 @@ class AuthServer:
                 self.auth_results[session_id] = {
                     "success": True,
                     "user_info": user_info,
-                    "timestamp": asyncio.get_event_loop().time()
+                    "timestamp": asyncio.get_event_loop().time(),
                 }
                 logger.info(f"✅ Stored auth result for session: {session_id}")
 
@@ -138,12 +148,12 @@ class AuthServer:
             except CSRFError as e:
                 return HTMLResponse(
                     content=self._create_error_page(f"Security error: {str(e)}"),
-                    status_code=403
+                    status_code=403,
                 )
             except Exception as e:
                 return HTMLResponse(
                     content=self._create_error_page(f"Authentication failed: {str(e)}"),
-                    status_code=500
+                    status_code=500,
                 )
 
         @self.app.get("/auth/status/{session_id}")
@@ -198,7 +208,9 @@ class AuthServer:
             "session_id": session_id,
             "auth_url": auth_url,
             "state": state,
-            "timestamp": asyncio.get_event_loop().time() if asyncio._get_running_loop() else 0
+            "timestamp": (
+                asyncio.get_event_loop().time() if asyncio._get_running_loop() else 0
+            ),
         }
         logger.info(f"📝 Created auth session: {session_id} with state: {state}")
         logger.info(f"📊 Total active sessions: {len(self.auth_sessions)}")
@@ -324,7 +336,7 @@ class AuthServer:
                 host="0.0.0.0",
                 port=self.port,
                 log_level="info",
-                access_log=False  # Reduce noise in logs
+                access_log=False,  # Reduce noise in logs
             )
             self.server = uvicorn.Server(config)
             asyncio.run(self.server.serve())
@@ -334,6 +346,7 @@ class AuthServer:
 
         # Give the server a moment to start
         import time
+
         time.sleep(1)
 
     def stop(self):

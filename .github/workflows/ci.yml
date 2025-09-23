@@ -103,41 +103,40 @@ jobs:
           OPENAI_API_KEY: "test-key"
         run: uv run pytest tests/integration/ -v
 
-  # TODO: Re-enable after resolving timing and Docker issues
-  # e2e-tests:
-  #   name: End-to-End Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Install uv
-  #       uses: astral-sh/setup-uv@v3
-  #       with:
-  #         version: "latest"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
 
-  #     - name: Set up Python
-  #       run: uv python install ${{ env.PYTHON_VERSION }}
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
 
-  #     - name: Install dependencies
-  #       run: uv sync
+      - name: Install dependencies
+        run: uv sync
 
-  #     - name: Start application with docker-compose
-  #       env:
-  #         OPENAI_API_KEY: "test-key"
-  #       run: |
-  #         docker compose up -d postgres
-  #         sleep 10
-  #         docker compose up -d app
-  #         sleep 15
+      - name: Start application with docker-compose
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: |
+          docker compose up -d postgres
+          sleep 10
+          docker compose up -d app
+          sleep 15
 
-  #     - name: Run E2E tests
-  #       env:
-  #         OPENAI_API_KEY: "test-key"
-  #       run: uv run pytest tests/e2e/ -v
+      - name: Run E2E tests
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: uv run pytest tests/e2e/ -v
 
-  #     - name: Stop services
-  #       if: always()
-  #       run: docker compose down
+      - name: Stop services
+        if: always()
+        run: docker compose down
 
   # TODO: Re-enable after resolving Docker test container timeout issues
   # build-and-test-docker:

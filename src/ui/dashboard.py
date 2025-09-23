@@ -213,10 +213,8 @@ class DashboardPage(ft.Column):
                     text="Safety Plan",
                     icon=ft.Icons.SHIELD,
                     on_click=self._handle_safety_plan,
-                    style=ft.ButtonStyle(
-                        bgcolor=ft.MaterialState.all(ft.Colors.RED_600),
-                        color=ft.MaterialState.all(ft.Colors.WHITE),
-                    ),
+                    bgcolor=ft.Colors.RED_600,
+                    color=ft.Colors.WHITE,
                 ),
                 ft.OutlinedButton(
                     text="Profile Settings",

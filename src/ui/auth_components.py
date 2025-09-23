@@ -344,20 +344,54 @@ class AuthenticationPage(ft.Column):
 
     def _on_auth_start(self):
         """Handle authentication start."""
-        self.status_text.value = "Opening Google authentication..."
+        self.status_text.value = "Opening Google authentication in your browser...\nComplete the sign-in process and this window will automatically load your dashboard."
         self.status_text.visible = True
         if hasattr(self, "update"):
             self.update()
 
     def _on_auth_success(self, user_info: Dict[str, Any]):
         """Handle authentication success."""
-        self.status_text.value = "Authentication successful! Loading dashboard..."
+        # Show success message with loading indicator
+        self.status_text.value = "✓ Authentication successful! Loading your dashboard..."
         self.status_text.color = ft.Colors.GREEN_600
         self.status_text.visible = True
+
+        # Add a progress ring to show loading
+        if hasattr(self, 'controls') and len(self.controls) > 0:
+            # Insert a progress indicator before the status text
+            progress_row = ft.Row(
+                controls=[
+                    ft.ProgressRing(
+                        width=20,
+                        height=20,
+                        stroke_width=2,
+                        color=ft.Colors.GREEN_600,
+                    ),
+                    ft.Text(
+                        "Loading dashboard...",
+                        size=14,
+                        color=ft.Colors.GREEN_600,
+                        weight=ft.FontWeight.W_500,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=10,
+            )
+
+            # Insert the progress row before the status text
+            status_index = None
+            for i, control in enumerate(self.controls):
+                if control == self.status_text:
+                    status_index = i
+                    break
+
+            if status_index is not None:
+                self.controls.insert(status_index, progress_row)
+
         if hasattr(self, "update"):
             self.update()
 
-        # Call the parent callback
+        # Call the parent callback after a brief delay to show the success state
         if self.on_auth_success:
             self.on_auth_success(user_info)
 

@@ -18,16 +18,18 @@ class TideApp:
         self.page = page
         self.auth_server = None
         self.current_user: Optional[Dict[str, Any]] = None
-        self.current_view = "auth"
 
         # Configure page properties
         self._configure_page()
 
+        # Set up navigation
+        self._setup_navigation()
+
         # Start auth server
         self._start_auth_server()
 
-        # Show initial view
-        self._show_auth_page()
+        # Navigate to initial route
+        self.page.go("/auth")
 
     def _configure_page(self):
         """Configure page properties."""
@@ -38,6 +40,84 @@ class TideApp:
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.padding = 20
         self.page.accessibility = True
+
+    def _setup_navigation(self):
+        """Set up navigation and routing."""
+        self.page.on_route_change = self._route_change
+        self.page.on_view_pop = self._view_pop
+
+    def _route_change(self, route):
+        """Handle route changes."""
+        # Clear existing views
+        self.page.views.clear()
+
+        # Create view based on current route
+        if self.page.route == "/auth":
+            self._create_auth_view()
+        elif self.page.route == "/dashboard":
+            self._create_dashboard_view()
+        else:
+            # Default to auth if route not recognized
+            self.page.route = "/auth"
+            self._create_auth_view()
+
+        self.page.update()
+
+    def _view_pop(self, view):
+        """Handle view pop (back navigation)."""
+        # Remove the top view
+        if len(self.page.views) > 1:
+            self.page.views.pop()
+            self.page.update()
+
+    def _create_auth_view(self):
+        """Create authentication view."""
+        auth_page = AuthenticationPage(
+            on_auth_success=self._handle_auth_success,
+            on_auth_error=self._handle_auth_error,
+        )
+
+        view = ft.View(
+            "/auth",
+            [
+                ft.SafeArea(
+                    content=ft.Container(
+                        content=auth_page,
+                        alignment=ft.alignment.center,
+                        expand=True,
+                    ),
+                    expand=True,
+                )
+            ],
+        )
+        self.page.views.append(view)
+
+    def _create_dashboard_view(self):
+        """Create dashboard view."""
+        if not self.current_user:
+            # Redirect to auth if no user
+            self.page.go("/auth")
+            return
+
+        dashboard = DashboardPage(
+            user_info=self.current_user,
+            on_sign_out=self._handle_sign_out,
+        )
+
+        view = ft.View(
+            "/dashboard",
+            [
+                ft.SafeArea(
+                    content=ft.Container(
+                        content=dashboard,
+                        alignment=ft.alignment.center,
+                        expand=True,
+                    ),
+                    expand=True,
+                )
+            ],
+        )
+        self.page.views.append(view)
 
     def _start_auth_server(self):
         """Start the authentication server."""
@@ -53,45 +133,11 @@ class TideApp:
         if self.auth_server:
             stop_auth_server()
 
-    def _show_auth_page(self):
-        """Show the authentication page."""
-        self.current_view = "auth"
-        auth_page = AuthenticationPage(
-            on_auth_success=self._handle_auth_success,
-            on_auth_error=self._handle_auth_error,
-        )
-
-        self._update_page_content(auth_page)
-
-    def _show_dashboard(self):
-        """Show the dashboard page."""
-        self.current_view = "dashboard"
-        dashboard = DashboardPage(
-            user_info=self.current_user,
-            on_sign_out=self._handle_sign_out,
-        )
-
-        self._update_page_content(dashboard)
-
-    def _update_page_content(self, content):
-        """Update the page content."""
-        self.page.controls.clear()
-        self.page.add(
-            ft.SafeArea(
-                content=ft.Container(
-                    content=content,
-                    alignment=ft.alignment.center,
-                    expand=True,
-                ),
-                expand=True,
-            )
-        )
-        self.page.update()
-
     def _handle_auth_success(self, user_info: Dict[str, Any]):
         """Handle successful authentication."""
         self.current_user = user_info
-        self._show_dashboard()
+        # Navigate to dashboard using Flet's routing
+        self.page.go("/dashboard")
 
     def _handle_auth_error(self, error_message: str):
         """Handle authentication error."""
@@ -100,7 +146,8 @@ class TideApp:
     def _handle_sign_out(self):
         """Handle user sign out."""
         self.current_user = None
-        self._show_auth_page()
+        # Navigate back to auth using Flet's routing
+        self.page.go("/auth")
 
     def _show_error(self, message: str):
         """Show error message to user."""

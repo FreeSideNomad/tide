@@ -324,8 +324,69 @@ class AuthServer:
                 <p>You can now close this tab and return to the Tide application.</p>
             </div>
             <script>
-                // Auto-close after 3 seconds
-                setTimeout(() => {{ window.close(); }}, 3000);
+                // Multiple methods to close the window for better browser compatibility
+                function closeWindow() {{
+                    // Method 1: Try standard window.close()
+                    try {{
+                        window.close();
+                    }} catch(e) {{
+                        console.log('window.close() failed:', e);
+                    }}
+
+                    // Method 2: If still open, try to redirect to about:blank
+                    setTimeout(() => {{
+                        if (!window.closed) {{
+                            window.location.href = 'about:blank';
+                        }}
+                    }}, 500);
+
+                    // Method 3: As last resort, show a clear message
+                    setTimeout(() => {{
+                        if (!window.closed) {{
+                            document.body.innerHTML = `
+                                <div class="container">
+                                    <div class="checkmark">✓</div>
+                                    <h1>Authentication Complete</h1>
+                                    <p><strong>You can now close this tab.</strong></p>
+                                    <p>Return to the Tide application to continue.</p>
+                                    <button onclick="window.close()" style="
+                                        background: #4CAF50;
+                                        color: white;
+                                        border: none;
+                                        padding: 12px 24px;
+                                        border-radius: 6px;
+                                        font-size: 16px;
+                                        cursor: pointer;
+                                        margin-top: 20px;
+                                    ">Close Tab</button>
+                                </div>
+                            `;
+                        }}
+                    }}, 1000);
+                }}
+
+                // Try to close immediately when page loads
+                document.addEventListener('DOMContentLoaded', function() {{
+                    // Show countdown for user awareness
+                    let countdown = 3;
+                    const countdownEl = document.createElement('p');
+                    countdownEl.style.fontSize = '14px';
+                    countdownEl.style.marginTop = '20px';
+                    document.querySelector('.container').appendChild(countdownEl);
+
+                    const updateCountdown = () => {{
+                        countdownEl.textContent = `This tab will close automatically in ${{countdown}} seconds...`;
+                        countdown--;
+
+                        if (countdown < 0) {{
+                            closeWindow();
+                        }} else {{
+                            setTimeout(updateCountdown, 1000);
+                        }}
+                    }};
+
+                    updateCountdown();
+                }});
             </script>
         </body>
         </html>

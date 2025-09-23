@@ -334,11 +334,18 @@ class AuthenticationPage(ft.Column):
             width=400,
         )
 
-        # Create Google Sign In button
+        # Create Google Sign In button with constrained width
         self.google_button = GoogleSignInButton(
             on_auth_start=self._on_auth_start,
             on_auth_error=self._on_auth_error,
             on_auth_success=self._on_auth_success,
+        )
+
+        # Wrap button in container to control width
+        self.button_container = ft.Container(
+            content=self.google_button,
+            width=280,  # Google recommended button width
+            alignment=ft.alignment.center,
         )
 
         # Status text for feedback
@@ -364,7 +371,7 @@ class AuthenticationPage(ft.Column):
                 ft.Container(height=20),  # Spacing
                 description,
                 ft.Container(height=40),  # Spacing
-                self.google_button,
+                self.button_container,
                 ft.Container(height=20),  # Spacing
                 self.status_text,
             ],

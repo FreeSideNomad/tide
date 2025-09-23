@@ -1,0 +1,113 @@
+# Issue Type Labels
+- name: "type:epic"
+  color: "8B5CF6"
+  description: "High-level business capability spanning multiple features"
+
+- name: "type:feature"
+  color: "3B82F6"
+  description: "Specific functionality within an epic"
+
+- name: "type:user-story"
+  color: "10B981"
+  description: "Specific user need with acceptance criteria"
+
+- name: "type:technical-task"
+  color: "F59E0B"
+  description: "Infrastructure/technical work without direct user value"
+
+- name: "type:spike"
+  color: "EC4899"
+  description: "Time-boxed research and investigation"
+
+- name: "type:bug"
+  color: "EF4444"
+  description: "Defects in existing functionality"
+
+# Priority Labels
+- name: "priority:critical"
+  color: "B91C1C"
+  description: "Critical priority - must be addressed immediately"
+
+- name: "priority:high"
+  color: "DC2626"
+  description: "High priority - important but not blocking"
+
+- name: "priority:medium"
+  color: "F59E0B"
+  description: "Medium priority - normal importance"
+
+- name: "priority:low"
+  color: "6B7280"
+  description: "Low priority - nice to have"
+
+# Epic Labels
+- name: "epic:user-profile-setup"
+  color: "8B5CF6"
+  description: "User Profile Setup Epic"
+
+- name: "epic:dbt-skills"
+  color: "8B5CF6"
+  description: "DBT Skills Epic (future)"
+
+- name: "epic:safety"
+  color: "8B5CF6"
+  description: "Safety & Crisis Detection Epic (future)"
+
+# Bounded Context Labels
+- name: "context:user-management"
+  color: "0EA5E9"
+  description: "User Management bounded context"
+
+- name: "context:questionnaire"
+  color: "06B6D4"
+  description: "Questionnaire bounded context"
+
+- name: "context:dbt-skills"
+  color: "8B5CF6"
+  description: "DBT Skills bounded context (future)"
+
+- name: "context:safety"
+  color: "EF4444"
+  description: "Safety bounded context (future)"
+
+# Status Labels
+- name: "status:blocked"
+  color: "991B1B"
+  description: "Blocked by external dependency"
+
+- name: "status:needs-approval"
+  color: "F59E0B"
+  description: "Needs stakeholder approval"
+
+- name: "status:ready-for-dev"
+  color: "10B981"
+  description: "Ready for development"
+
+- name: "status:in-review"
+  color: "3B82F6"
+  description: "In code review"
+
+- name: "status:testing"
+  color: "8B5CF6"
+  description: "In testing phase"
+
+# Size Labels (for estimation)
+- name: "size:xs"
+  color: "D1FAE5"
+  description: "Extra small - 1-2 hours"
+
+- name: "size:s"
+  color: "A7F3D0"
+  description: "Small - half day"
+
+- name: "size:m"
+  color: "6EE7B7"
+  description: "Medium - 1-2 days"
+
+- name: "size:l"
+  color: "34D399"
+  description: "Large - 3-5 days"
+
+- name: "size:xl"
+  color: "10B981"
+  description: "Extra large - 1+ weeks"

@@ -1,0 +1,104 @@
+name: Epic
+description: High-level business capability spanning multiple features
+title: "Epic: [Epic Name]"
+labels: ["type:epic"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Create a new epic representing a high-level business capability.
+
+  - type: input
+    id: epic-name
+    attributes:
+      label: Epic Name
+      description: Brief name for this business capability
+      placeholder: e.g., "User Profile Setup"
+    validations:
+      required: true
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview
+      description: Brief description of business capability
+      placeholder: Describe what this epic accomplishes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiki-references
+    attributes:
+      label: Wiki References
+      description: Links to relevant documentation
+      value: |
+        - Epic Documentation: `docs/wiki/epic-[name]/epic-[name].md`
+        - Domain Model: `docs/wiki/domain-model.md` (relevant bounded contexts)
+        - Business Requirements: Reference to BR-XXX from vision.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-context
+    attributes:
+      label: Business Context
+      description: Business problem this epic solves
+      placeholder: Describe the business need and context...
+    validations:
+      required: true
+
+  - type: textarea
+    id: target-users
+    attributes:
+      label: Target Users
+      description: User types from domain model
+      value: |
+        **Primary:**
+        - [user types from domain model]
+
+        **Secondary:**
+        - [user types from domain model]
+    validations:
+      required: true
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Features
+      description: Features that will be part of this epic
+      value: |
+        - [ ] Feature 1: [Name] (link to feature issue when created)
+        - [ ] Feature 2: [Name] (link to feature issue when created)
+    validations:
+      required: true
+
+  - type: textarea
+    id: success-metrics
+    attributes:
+      label: Success Metrics
+      description: Measurable outcomes for this epic
+      placeholder: |
+        - Authentication completion rate > 95%
+        - User satisfaction score > 4.5/5
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other epics, external systems, or blockers
+      placeholder: List any dependencies...
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Epic completion criteria
+      options:
+        - label: All features completed and tested
+        - label: Domain events implemented
+        - label: Wiki documentation updated
+        - label: Acceptance criteria met

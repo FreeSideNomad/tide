@@ -1,0 +1,117 @@
+name: Spike
+description: Time-boxed research and investigation
+title: "Spike: [Research Topic]"
+labels: ["type:spike"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Create a time-boxed research spike for investigation work.
+
+  - type: input
+    id: research-topic
+    attributes:
+      label: Research Topic
+      description: Brief name for this research
+      placeholder: e.g., "FastAPI Session Middleware Options"
+    validations:
+      required: true
+
+  - type: textarea
+    id: research-questions
+    attributes:
+      label: Research Questions
+      description: What we need to investigate
+      placeholder: |
+        1. What are the available options?
+        2. Which option best fits our requirements?
+        3. What are the trade-offs?
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiki-references
+    attributes:
+      label: Wiki References
+      description: Links to relevant documentation
+      value: |
+        - Domain Model: `docs/wiki/domain-model.md` (if relevant)
+        - Related Documentation: [Any relevant wiki pages]
+
+  - type: input
+    id: related-epic-feature
+    attributes:
+      label: Related Epic/Feature
+      description: Link to related epic or feature if applicable
+      placeholder: "#123"
+
+  - type: textarea
+    id: business-need
+    attributes:
+      label: Business Need
+      description: Why this research is important
+      placeholder: Explain why this research is needed...
+    validations:
+      required: true
+
+  - type: input
+    id: time-box-duration
+    attributes:
+      label: Time-box Duration
+      description: Maximum time to spend on research
+      placeholder: e.g., "4 hours", "1 day"
+    validations:
+      required: true
+
+  - type: input
+    id: deadline
+    attributes:
+      label: Deadline
+      description: When decision is needed
+      placeholder: e.g., "Before next sprint", "By Friday"
+
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How we'll know the spike is complete
+      value: |
+        - [ ] Research question 1 answered
+        - [ ] Research question 2 answered
+        - [ ] Recommendation provided
+    validations:
+      required: true
+
+  - type: textarea
+    id: potential-solutions
+    attributes:
+      label: Potential Solutions to Explore
+      description: Initial options to investigate
+      value: |
+        1. Option 1
+        2. Option 2
+        3. Option 3
+
+  - type: checkboxes
+    id: deliverables
+    attributes:
+      label: Deliverables
+      description: What will be delivered
+      options:
+        - label: Research findings documented
+        - label: Recommendation provided
+        - label: Next steps identified
+        - label: Update relevant wiki documentation
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Spike completion criteria
+      options:
+        - label: Research complete within time-box
+        - label: Findings documented
+        - label: Recommendation made
+        - label: Follow-up issues created if needed

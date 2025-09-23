@@ -1,0 +1,135 @@
+name: User Story
+description: Specific user need with acceptance criteria
+title: "User Story: [Story Title]"
+labels: ["type:user-story"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Create a new user story within an existing feature.
+
+  - type: input
+    id: story-title
+    attributes:
+      label: Story Title
+      description: Brief title for this user story
+      placeholder: e.g., "Sign In with Google Button"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Standard user story format
+      value: |
+        **As a** [user type from domain model]
+        **I want** [goal/need]
+        **So that** [benefit/value]
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiki-references
+    attributes:
+      label: Wiki References
+      description: Links to relevant documentation
+      value: |
+        - Feature Documentation: `docs/wiki/epic-[name]/feature-[number]-[name].md`
+        - Essential Use Case: [Reference specific use case this story implements]
+        - Domain Model: `docs/wiki/domain-model.md`
+    validations:
+      required: true
+
+  - type: input
+    id: parent-feature
+    attributes:
+      label: Parent Feature Issue
+      description: Link to the feature issue this story belongs to
+      placeholder: "#123"
+    validations:
+      required: true
+
+  - type: input
+    id: parent-epic
+    attributes:
+      label: Epic Issue
+      description: Link to the epic issue
+      placeholder: "#123"
+    validations:
+      required: true
+
+  - type: textarea
+    id: aggregates-involved
+    attributes:
+      label: Aggregates Involved
+      description: Relevant aggregates from domain model
+      placeholder: |
+        - User
+        - Question
+    validations:
+      required: true
+
+  - type: textarea
+    id: domain-services
+    attributes:
+      label: Domain Services
+      description: Services this story uses
+      placeholder: |
+        - UserService
+        - AuthenticationService
+
+  - type: textarea
+    id: domain-events
+    attributes:
+      label: Domain Events
+      description: Events triggered by this story
+      placeholder: |
+        - UserRegistered
+        - UserLoggedIn
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Detailed criteria from feature documentation
+      value: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Technical Implementation Notes
+      description: Specific technical considerations
+      placeholder: |
+        - Database schema changes
+        - API endpoints affected
+        - Special configurations needed
+
+  - type: checkboxes
+    id: testing-requirements
+    attributes:
+      label: Testing Requirements
+      description: Required tests for this story
+      options:
+        - label: Unit tests for business logic
+        - label: Integration tests for domain interactions
+        - label: End-to-end tests for user workflow
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Story completion criteria
+      options:
+        - label: Acceptance criteria met
+        - label: Code reviewed and approved
+        - label: Tests passing
+        - label: Domain model integrity maintained
+        - label: Documentation updated

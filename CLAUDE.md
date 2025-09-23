@@ -126,9 +126,10 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 - **Frontend**: Python Flet for cross-platform mobile and web deployment
 - **Database**: PostgreSQL with pgvector for RAG storage
 - **ORM**: SQLAlchemy for maintainability and type safety
-- **Session Management**: Redis for session state and caching
+- **Session Management**: Redis for session state and caching with FastAPI session middleware
+- **Authentication Middleware**: FastAPI middleware for automatic route protection and session validation
 - **AI Integration**: OpenAI API with cost management
-- **Authentication**: Google OAuth or Microsoft OAuth
+- **Authentication**: Google OAuth or Microsoft OAuth with 20-minute sliding window sessions
 - **Package Management**: uv for fast Python dependency management
 - **Testing**: Pytest with comprehensive test suite (unit, integration, E2E)
 - **Code Quality**: Black (formatting), Ruff (linting), Safety (security), Bandit (security)
@@ -164,6 +165,352 @@ The application follows Domain-Driven Design (DDD) principles with a comprehensi
 - **Flexible Questionnaire**: Single questionnaire with deprecated/active questions rather than versioning
 - **Session Separation**: Authentication tokens and temporary state stored in Redis, not domain model
 - **Eventual Consistency**: New questions automatically become pending for all existing users
+
+### Authentication Architecture
+- **Middleware-Based Protection**: FastAPI authentication middleware provides automatic route protection
+- **Session-Based Authentication**: Redis-backed sessions with sliding window expiration (20 minutes)
+- **OAuth Integration**: Google and Microsoft OAuth providers for secure external authentication
+- **Public Route Configuration**: Configurable list of routes that bypass authentication requirements
+- **Automatic Redirection**: Unauthenticated requests automatically redirected to login page
+- **User Context Injection**: Authenticated user information available in all protected route handlers
+
+## GitHub Project Management
+
+### Custom Issue Types and Templates
+
+The project uses GitHub Issues with custom labels and templates to track work according to our domain-driven approach. All issues must reference relevant wiki documentation to ensure complete traceability from business requirements to implementation.
+
+#### Issue Type: Epic
+**Purpose**: High-level business capability spanning multiple features
+**Label**: `type:epic`
+**Template**:
+```markdown
+# Epic: [Epic Name]
+
+## Overview
+[Brief description of business capability]
+
+## Wiki References
+- Epic Documentation: `docs/wiki/epic-[name]/epic-[name].md`
+- Domain Model: `docs/wiki/domain-model.md` (relevant bounded contexts)
+- Business Requirements: Reference to BR-XXX from vision.md
+
+## Business Context
+[Business problem this epic solves]
+
+## Target Users
+- Primary: [user types from domain model]
+- Secondary: [user types from domain model]
+
+## Features
+- [ ] Feature 1: [Name] (links to feature issues)
+- [ ] Feature 2: [Name] (links to feature issues)
+
+## Success Metrics
+- [Measurable outcomes]
+
+## Dependencies
+- [Other epics, external systems]
+
+## Definition of Done
+- [ ] All features completed and tested
+- [ ] Domain events implemented
+- [ ] Wiki documentation updated
+- [ ] Acceptance criteria met
+```
+
+#### Issue Type: Feature
+**Purpose**: Specific functionality within an epic
+**Label**: `type:feature`
+**Template**:
+```markdown
+# Feature: [Feature Name]
+
+## Overview
+[Brief description of feature functionality]
+
+## Wiki References
+- Feature Documentation: `docs/wiki/epic-[name]/feature-[number]-[name].md`
+- Domain Model: `docs/wiki/domain-model.md` (relevant aggregates/services)
+- Epic: [Link to parent epic issue]
+
+## Domain Model Integration
+### Bounded Context
+[User Management, Questionnaire, etc.]
+
+### Domain Objects Used
+- Aggregate Roots: [List from domain model]
+- Entities: [List from domain model]
+- Value Objects: [List from domain model]
+- Domain Services: [List from domain model]
+
+### Domain Events
+- [List events this feature publishes/subscribes to]
+
+## Essential Use Cases
+[Reference use cases from feature documentation]
+
+## User Stories
+- [ ] Story 1: [Name] (links to user story issues)
+- [ ] Story 2: [Name] (links to user story issues)
+
+## Technical Requirements
+- [Database changes, API requirements, etc.]
+
+## Acceptance Criteria
+- [ ] [Criteria from feature documentation]
+
+## Dependencies
+- [Other features, external services]
+
+## Definition of Done
+- [ ] All user stories completed
+- [ ] Domain model implemented correctly
+- [ ] Tests passing (unit, integration)
+- [ ] Documentation updated
+```
+
+#### Issue Type: User Story
+**Purpose**: Specific user need with acceptance criteria
+**Label**: `type:user-story`
+**Template**:
+```markdown
+# User Story: [Story Title]
+
+## Story
+**As a** [user type from domain model]
+**I want** [goal/need]
+**So that** [benefit/value]
+
+## Wiki References
+- Feature Documentation: `docs/wiki/epic-[name]/feature-[number]-[name].md`
+- Essential Use Case: [Reference specific use case this story implements]
+- Domain Model: `docs/wiki/domain-model.md`
+
+## Feature Context
+**Parent Feature**: [Link to feature issue]
+**Epic**: [Link to epic issue]
+
+## Domain Model Alignment
+### Aggregates Involved
+- [List relevant aggregates from domain model]
+
+### Domain Services
+- [List services this story uses]
+
+### Domain Events
+- [Events triggered by this story]
+
+## Acceptance Criteria
+[Detailed criteria from feature documentation]
+- [ ] [Criterion 1]
+- [ ] [Criterion 2]
+
+## Technical Implementation Notes
+- [Any specific technical considerations]
+- [Database schema changes]
+- [API endpoints affected]
+
+## Testing Requirements
+- [ ] Unit tests for business logic
+- [ ] Integration tests for domain interactions
+- [ ] End-to-end tests for user workflow
+
+## Definition of Done
+- [ ] Acceptance criteria met
+- [ ] Code reviewed and approved
+- [ ] Tests passing
+- [ ] Domain model integrity maintained
+- [ ] Documentation updated
+```
+
+#### Issue Type: Technical Task
+**Purpose**: Infrastructure/technical work without direct user value
+**Label**: `type:technical-task`
+**Template**:
+```markdown
+# Technical Task: [Task Name]
+
+## Overview
+[Description of technical work needed]
+
+## Wiki References
+- Domain Model: `docs/wiki/domain-model.md` (if relevant)
+- CLAUDE.md: [Reference relevant sections]
+
+## Context
+**Related Epic/Feature**: [Link if applicable]
+**Business Justification**: [Why this technical work is needed]
+
+## Technical Requirements
+- [Specific technical deliverables]
+- [Infrastructure changes]
+- [Configuration updates]
+
+## Dependencies
+- [Other technical tasks, external systems]
+
+## Acceptance Criteria
+- [ ] [Technical criterion 1]
+- [ ] [Technical criterion 2]
+
+## Testing Requirements
+- [ ] [How to verify the work is complete]
+
+## Definition of Done
+- [ ] Technical implementation complete
+- [ ] Documentation updated
+- [ ] No regressions introduced
+- [ ] Code reviewed and approved
+```
+
+#### Issue Type: Spike
+**Purpose**: Time-boxed research and investigation
+**Label**: `type:spike`
+**Template**:
+```markdown
+# Spike: [Research Topic]
+
+## Research Questions
+[What we need to investigate]
+
+## Wiki References
+- Domain Model: `docs/wiki/domain-model.md` (if relevant)
+- Related Documentation: [Any relevant wiki pages]
+
+## Context
+**Related Epic/Feature**: [Link if applicable]
+**Business Need**: [Why this research is important]
+
+## Time-box
+**Duration**: [Maximum time to spend]
+**Deadline**: [When decision needed]
+
+## Success Criteria
+[How we'll know the spike is complete]
+- [ ] [Research question 1 answered]
+- [ ] [Research question 2 answered]
+
+## Deliverables
+- [ ] Research findings documented
+- [ ] Recommendation provided
+- [ ] Next steps identified
+- [ ] Update relevant wiki documentation
+
+## Potential Solutions to Explore
+1. [Option 1]
+2. [Option 2]
+3. [Option 3]
+
+## Definition of Done
+- [ ] Research complete within time-box
+- [ ] Findings documented
+- [ ] Recommendation made
+- [ ] Follow-up issues created if needed
+```
+
+#### Issue Type: Bug
+**Purpose**: Defects in existing functionality
+**Label**: `type:bug`
+**Template**:
+```markdown
+# Bug: [Brief Description]
+
+## Description
+[Clear description of the issue]
+
+## Steps to Reproduce
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+## Expected Behavior
+[What should happen]
+
+## Actual Behavior
+[What actually happens]
+
+## Environment
+- **Browser/Platform**: [Browser version, OS, mobile device]
+- **User Type**: [From domain model - which user type affected]
+- **Feature Area**: [Which feature/epic this affects]
+
+## Domain Model Impact
+**Affected Aggregates**: [User, Question, etc.]
+**Affected Services**: [UserService, AuthenticationService, etc.]
+
+## Severity
+- [ ] Critical (blocks core functionality)
+- [ ] High (major feature broken)
+- [ ] Medium (feature partially broken)
+- [ ] Low (minor issue)
+
+## Related Issues
+**Epic**: [Link if relevant]
+**Feature**: [Link if relevant]
+**User Stories**: [Links to affected stories]
+
+## Definition of Done
+- [ ] Root cause identified
+- [ ] Fix implemented
+- [ ] Tests added to prevent regression
+- [ ] Code reviewed and approved
+- [ ] Verified in all affected environments
+```
+
+### Kanban Board Setup
+
+#### Board Structure
+**Main Development Board**: Single kanban board tracking all work types
+
+#### Columns
+1. **Backlog** - Approved and ready for planning
+2. **Ready** - Sized and ready to start (next sprint items)
+3. **In Progress** - Currently being worked on
+4. **Review** - Awaiting code review or stakeholder approval
+5. **Testing** - In QA/testing phase
+6. **Done** - Completed and verified
+
+#### Swimlanes
+- **Epic Level**: One swimlane per active epic
+- **Bug Triage**: Separate swimlane for urgent bugs
+
+#### Work In Progress (WIP) Limits
+- **In Progress**: Maximum 3 items per developer
+- **Review**: Maximum 5 items total
+- **Testing**: Maximum 3 items total
+
+#### Labels and Filtering
+- **Type Labels**: `type:epic`, `type:feature`, `type:user-story`, `type:technical-task`, `type:spike`, `type:bug`
+- **Priority Labels**: `priority:critical`, `priority:high`, `priority:medium`, `priority:low`
+- **Epic Labels**: `epic:user-profile-setup`, `epic:dbt-skills`, etc.
+- **Bounded Context Labels**: `context:user-management`, `context:questionnaire`, `context:dbt-skills`, `context:safety`
+
+### Issue Workflow Rules
+
+#### Epic → Feature → User Story Flow
+1. **Epic** created first with complete wiki documentation
+2. **Features** created and linked to Epic with domain model references
+3. **User Stories** created and linked to Features with use case references
+4. All issues must reference relevant wiki documentation
+5. Domain model impact must be documented for all changes
+
+#### Cross-Reference Requirements
+- Every Feature must reference its Epic and domain model
+- Every User Story must reference its Feature and essential use case
+- Every implementation issue must trace back to business requirements
+- All domain changes must be reflected in domain model documentation
+
+## Remember
+
+**"Every GitHub issue must be traceable to business value through our wiki documentation chain: Epic → Feature → User Story → Essential Use Case → Domain Model → Business Requirements."**
+
+Always ensure:
+1. Complete wiki documentation before creating issues
+2. Proper cross-referencing between issues and wiki
+3. Domain model alignment documented in every issue
+4. Acceptance criteria traced to business requirements
+5. Clear definition of done for every work item
 
 ## Architecture Principles
 
@@ -221,10 +568,13 @@ The application follows Domain-Driven Design (DDD) principles with a comprehensi
 - **Migrations**: Alembic for database schema management
 
 ### Redis Session Management
+- **FastAPI Session Middleware**: Standard FastAPI session management with Redis backend
 - **Session Storage**: Redis for user session state and authentication tokens
+- **Sliding Window Expiration**: 20-minute sessions with automatic extension on activity
+- **Authentication Middleware**: Automatic route protection and session validation
+- **Stateless Architecture**: No sticky sessions required, horizontally scalable
 - **Caching Layer**: Application-level caching for frequently accessed data
-- **Session Expiration**: Automatic cleanup of expired sessions
-- **Scalability**: Horizontal scaling support for session management
+- **Session Lifecycle**: Automatic cleanup of expired sessions
 - **Performance**: Fast in-memory operations for session data
 
 ### Data Storage Strategy

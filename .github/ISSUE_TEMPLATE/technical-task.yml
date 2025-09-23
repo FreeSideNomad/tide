@@ -1,0 +1,104 @@
+name: Technical Task
+description: Infrastructure/technical work without direct user value
+title: "Technical Task: [Task Name]"
+labels: ["type:technical-task"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Create a technical task for infrastructure or technical work.
+
+  - type: input
+    id: task-name
+    attributes:
+      label: Task Name
+      description: Brief name for this technical task
+      placeholder: e.g., "Setup Redis Session Store"
+    validations:
+      required: true
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview
+      description: Description of technical work needed
+      placeholder: Describe the technical work required...
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiki-references
+    attributes:
+      label: Wiki References
+      description: Links to relevant documentation
+      value: |
+        - Domain Model: `docs/wiki/domain-model.md` (if relevant)
+        - CLAUDE.md: [Reference relevant sections]
+    validations:
+      required: true
+
+  - type: input
+    id: related-epic-feature
+    attributes:
+      label: Related Epic/Feature
+      description: Link to related epic or feature if applicable
+      placeholder: "#123"
+
+  - type: textarea
+    id: business-justification
+    attributes:
+      label: Business Justification
+      description: Why this technical work is needed
+      placeholder: Explain the business need for this technical work...
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: Technical Requirements
+      description: Specific technical deliverables
+      placeholder: |
+        - Infrastructure changes
+        - Configuration updates
+        - Dependencies to install
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other technical tasks, external systems
+      placeholder: List any dependencies...
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Technical completion criteria
+      value: |
+        - [ ] Technical criterion 1
+        - [ ] Technical criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing-requirements
+    attributes:
+      label: Testing Requirements
+      description: How to verify the work is complete
+      placeholder: Describe how to test/verify this work...
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Task completion criteria
+      options:
+        - label: Technical implementation complete
+        - label: Documentation updated
+        - label: No regressions introduced
+        - label: Code reviewed and approved

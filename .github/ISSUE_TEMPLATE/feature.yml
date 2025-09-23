@@ -1,0 +1,141 @@
+name: Feature
+description: Specific functionality within an epic
+title: "Feature: [Feature Name]"
+labels: ["type:feature"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Create a new feature within an existing epic.
+
+  - type: input
+    id: feature-name
+    attributes:
+      label: Feature Name
+      description: Brief name for this feature
+      placeholder: e.g., "Google OAuth Authentication"
+    validations:
+      required: true
+
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview
+      description: Brief description of feature functionality
+      placeholder: Describe what this feature accomplishes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiki-references
+    attributes:
+      label: Wiki References
+      description: Links to relevant documentation
+      value: |
+        - Feature Documentation: `docs/wiki/epic-[name]/feature-[number]-[name].md`
+        - Domain Model: `docs/wiki/domain-model.md` (relevant aggregates/services)
+        - Epic: [Link to parent epic issue]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: bounded-context
+    attributes:
+      label: Bounded Context
+      description: Which domain context does this feature belong to?
+      options:
+        - User Management
+        - Questionnaire
+        - DBT Skills
+        - Safety
+    validations:
+      required: true
+
+  - type: textarea
+    id: domain-objects
+    attributes:
+      label: Domain Objects Used
+      description: Domain model components this feature uses
+      value: |
+        **Aggregate Roots:**
+        - [List from domain model]
+
+        **Entities:**
+        - [List from domain model]
+
+        **Value Objects:**
+        - [List from domain model]
+
+        **Domain Services:**
+        - [List from domain model]
+    validations:
+      required: true
+
+  - type: textarea
+    id: domain-events
+    attributes:
+      label: Domain Events
+      description: Events this feature publishes/subscribes to
+      placeholder: |
+        - UserRegistered
+        - UserLoggedIn
+    validations:
+      required: true
+
+  - type: textarea
+    id: essential-use-cases
+    attributes:
+      label: Essential Use Cases
+      description: Reference use cases from feature documentation
+      placeholder: List the essential use cases this feature implements...
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories
+      description: User stories that will implement this feature
+      value: |
+        - [ ] Story 1: [Name] (link to user story issue when created)
+        - [ ] Story 2: [Name] (link to user story issue when created)
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: Technical Requirements
+      description: Database changes, API requirements, etc.
+      placeholder: List technical requirements...
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Criteria from feature documentation
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other features, external services
+      placeholder: List any dependencies...
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Feature completion criteria
+      options:
+        - label: All user stories completed
+        - label: Domain model implemented correctly
+        - label: Tests passing (unit, integration)
+        - label: Documentation updated

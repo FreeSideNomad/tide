@@ -1,0 +1,138 @@
+name: Bug Report
+description: Report a defect in existing functionality
+title: "Bug: [Brief Description]"
+labels: ["type:bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Overview
+        Report a bug or defect in existing functionality.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Clear description of the issue
+      placeholder: Describe what's wrong...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the issue
+      value: |
+        1. Step 1
+        2. Step 2
+        3. Step 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen
+      placeholder: Describe the expected behavior...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happens
+      placeholder: Describe what actually happens...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Platform and environment details
+      value: |
+        - **Browser/Platform**: [Browser version, OS, mobile device]
+        - **User Type**: [From domain model - which user type affected]
+        - **Feature Area**: [Which feature/epic this affects]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: Affected User Type
+      description: Which user type from domain model is affected?
+      options:
+        - New User
+        - Returning User
+        - Administrator
+        - All Users
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: domain-model-impact
+    attributes:
+      label: Domain Model Impact
+      description: Which domain components are affected
+      value: |
+        **Affected Aggregates:** [User, Question, etc.]
+        **Affected Services:** [UserService, AuthenticationService, etc.]
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Impact level of this bug
+      options:
+        - Critical (blocks core functionality)
+        - High (major feature broken)
+        - Medium (feature partially broken)
+        - Low (minor issue)
+    validations:
+      required: true
+
+  - type: input
+    id: related-epic
+    attributes:
+      label: Related Epic
+      description: Link to affected epic if relevant
+      placeholder: "#123"
+
+  - type: input
+    id: related-feature
+    attributes:
+      label: Related Feature
+      description: Link to affected feature if relevant
+      placeholder: "#123"
+
+  - type: input
+    id: related-user-stories
+    attributes:
+      label: Related User Stories
+      description: Links to affected user stories
+      placeholder: "#123, #124"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Screenshots, logs, or other helpful information
+      placeholder: Add any additional context here...
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: Bug resolution criteria
+      options:
+        - label: Root cause identified
+        - label: Fix implemented
+        - label: Tests added to prevent regression
+        - label: Code reviewed and approved
+        - label: Verified in all affected environments

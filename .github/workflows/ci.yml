@@ -124,9 +124,9 @@ jobs:
         env:
           OPENAI_API_KEY: "test-key"
         run: |
-          docker-compose up -d postgres
+          docker compose up -d postgres
           sleep 10
-          docker-compose up -d app
+          docker compose up -d app
           sleep 15
 
       - name: Run E2E tests
@@ -136,7 +136,7 @@ jobs:
 
       - name: Stop services
         if: always()
-        run: docker-compose down
+        run: docker compose down
 
   build-and-test-docker:
     name: Docker Build & Test
@@ -154,10 +154,10 @@ jobs:
         env:
           OPENAI_API_KEY: "test-key"
         run: |
-          docker-compose -f docker-compose.yml up -d postgres
+          docker compose -f docker-compose.yml up -d postgres
           sleep 10
-          docker-compose -f docker-compose.yml --profile test run --rm test
-          docker-compose down
+          docker compose -f docker-compose.yml --profile test run --rm test
+          docker compose down
 
   security-scan:
     name: Security Scanning

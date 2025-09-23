@@ -6,14 +6,18 @@
 
 ### Technology Stack
 - **Python Flet**: Cross-platform framework for mobile and web deployment
-- **Target Platforms**: Mobile (iOS/Android) and web browsers
+- **Target Platforms**: Mobile (iOS/Android) and web browsers prioritizing mobile-first design
 - **Architecture**: Safety-constrained decision trees with NLP enhancement for personalization
+- **Decision Tree Implementation**: JSON structure with rule engine for crisis detection and skill selection
+
 
 ### Core Features
-- Evidence-based DBT skill delivery through structured pathways
-- Crisis detection with safety plan integration
-- Four DBT modules: Mindfulness, Distress Tolerance, Emotion Regulation, Interpersonal Effectiveness
-- Safety-first design prioritizing user wellbeing over engagement metrics
+- **Evidence-based DBT skill delivery** through structured decision pathways (not chat)
+- **Four DBT modules**: Mindfulness, Distress Tolerance, Emotion Regulation, Interpersonal Effectiveness
+- **Safety-first design** prioritizing user wellbeing over engagement metrics or feature completeness
+- **Structured decision trees** with predetermined safe pathways and NLP personalization
+- **Crisis survival skills** focus with immediate safety plan activation for 8+ intensity or crisis keywords
+- **Human oversight integration** with seamless handoff protocols for flagged situations
 
 ## Wiki Documentation
 
@@ -31,20 +35,54 @@ git submodule update --remote docs/wiki
 Wiki content is directly accessible in the `docs/wiki/` directory:
 - `docs/wiki/vision.md` - Complete project vision and business requirements
 - `docs/wiki/dbt-ai-assistant-brainstorm.md` - Design decisions and technical brainstorming
+- `docs/wiki/canadian-mental-health-ai-regulatory-framework.md` - Canadian legal and ethical considerations
+- `docs/wiki/dbt-distress-tolerance-tree.md` - Detailed distress tolerance decision tree architecture
+
+### Target Users (from docs/wiki/vision.md)
+
+**Primary Users:**
+1. Individuals seeking DBT skills without access to therapy
+2. Crisis prevention users needing evidence-based techniques during distress
+3. Skill practice users supplementing existing therapy
+4. Self-help seekers building emotional regulation and interpersonal skills
+
+**Secondary Users:**
+1. Mental health professionals referencing the tool as therapy supplement
+2. Human advisors providing oversight and escalation support
+3. Crisis counselors receiving escalated cases
+4. Researchers studying AI-assisted skill development
 
 ### Key Business Requirements (from docs/wiki/vision.md)
-- **BR-1**: Safety-First Architecture - Crisis detection with human escalation
-- **BR-2**: Evidence-Based DBT Skill Delivery - Structured decision trees only
-- **BR-3**: Human Oversight Integration - 24/7 advisor availability
-- **BR-4**: Transparent AI Limitations - Clear disclaimers and boundaries
-- **BR-5**: Crisis Detection and Response - Multi-layered safety systems
+- **BR-1**: Safety-First Architecture - Crisis detection with human escalation protocols
+- **BR-2**: Evidence-Based DBT Skill Delivery - Structured decision trees only, no open-ended chat
+- **BR-3**: Human Oversight Integration - 24/7 advisor availability for critical situations
+- **BR-4**: Transparent AI Limitations - Clear disclaimers about therapy replacement boundaries
+- **BR-5**: Crisis Detection and Response - Multi-layered safety systems with immediate escalation
+- **BR-6**: Structured Decision Architecture - Predetermined pathways within safety constraints
 
-### Design Principles (from docs/wiki/dbt-ai-assistant-brainstorm.md)
-- Decision tree primary architecture with NLP enhancement
-- Standalone tool for users without therapy access
-- Safety plan integration required during registration
-- No direct counseling - guides to pre-established resources
-- Maladaptive pattern detection using keyword matching
+### Safety-First Design Principles (from docs/wiki/dbt-ai-assistant-brainstorm.md)
+- **Decision tree primary architecture** with NLP enhancement for personalization only
+- **Standalone tool** for users without therapy access
+- **Safety plan integration** required during registration before any skill access
+- **No direct counseling** - guides to pre-established user resources
+- **Crisis survival skills** focus with safety plan activation protocols
+- **Maladaptive pattern detection** using keyword matching ("always", "never", "everyone", "no one")
+- **Fact vs. perception awareness** - distinguish objective circumstances from emotional interpretations
+
+### Clinical Evidence Base (from docs/wiki/dbt-ai-assistant-brainstorm.md)
+- **8 high-quality RCTs** confirm DBT effectiveness
+- **Low dropout rate** (27.3%) with moderate effect sizes
+- **DBT skills are key mechanism** of change for suicide attempts, NSSI, depression, anger
+- **Stand-alone training** growing evidence for transdiagnostic treatment
+- **Safety planning reduces** suicidal behavior risk by 45%
+
+### Canadian Regulatory Context (from docs/wiki/canadian-mental-health-ai-regulatory-framework.md)
+- **PIPEDA compliance** required for mental health data handling
+- **Provincial health information acts** apply across different provinces
+- **Bill C-27/AIDA** (proposed) classifies crisis detection as high-impact AI system
+- **Health Canada SaMD** classification considerations for crisis features
+- **Indigenous data sovereignty** and cultural adaptation requirements
+- **Ethical framework alignment** with Canadian AI Ethics Guidelines
 
 The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 
@@ -109,14 +147,22 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 
 ## Architecture Principles
 
-### 1. Domain-First Architecture
-- Core business domain comes first
-- Supporting domains (auth, user management) come later
-- Start with business entity modeling
-- Define core use cases before technical infrastructure
-- Defer authentication until business logic is validated
+### 1. Safety-First Architecture (Overrides All Other Principles)
+- **User safety prioritized** over feature completeness, engagement, or technical elegance
+- **Crisis detection algorithms** with immediate human escalation triggers
+- **Evidence-based responses only** with clear citations and disclaimers
+- **Fail-safe mechanisms** when AI confidence levels are insufficient
+- **Complete audit trail** of all user interactions for safety monitoring
+- **Multi-layer validation** before any AI-generated content reaches users
 
-### 2. GitHub-Native Development
+### 2. Domain-First Architecture
+- **Core DBT business domain** comes first (Distress Tolerance MVP)
+- Supporting domains (auth, user management) come later
+- Start with **safety plan registration** before any skill access
+- Define **crisis survival use cases** before technical infrastructure
+- Defer authentication until **core safety features** are validated
+
+### 3. GitHub-Native Development
 - Use GitHub as single source of truth for all project artifacts
 - Vision and context in GitHub Wiki
 - Work tracking through GitHub Issues
@@ -124,19 +170,26 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 - Code in GitHub repositories
 - Automation through GitHub Actions
 
-### 3. User-Centric Validation
+### 4. User-Centric Validation
 - Validate every significant decision with users before implementation
 - Present plans as GitHub Issues for review
 - Create UI mocks in structured format (Markdown/YAML) before coding
 - Implement feedback loops at every stage
-- Prioritize user experience over technical elegance
+- **Prioritize user safety** over user experience preferences
 
-### 4. Essential Use Cases Methodology
+### 5. Essential Use Cases Methodology
 - Follow Alistair Cockburn's Essential Use Cases approach
-- Start with essential user goals and intentions
+- Start with essential user goals and intentions (crisis survival)
 - Avoid technical implementation details initially
 - Focus on "what" before "how"
 - Progressive refinement through structured formats
+
+### 6. Evidence-Based Content Management
+- **All content sourced** from published DBT research and clinical guidelines
+- **Version control** for all therapeutic content with clinical review requirements
+- **Standardized response templates** based on validated interventions
+- **Regular content audits** by qualified mental health professionals
+- **Clear attribution** and citation for all therapeutic recommendations
 
 ## Database Architecture
 
@@ -194,16 +247,61 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 3. **Ignoring Test Coverage**: Maintain quality standards from the start
 4. **Security Oversights**: Follow security best practices consistently
 
-## Remember
+## Safety-First Development Principles
 
-**"Start simple, validate early, iterate based on feedback, and let the business domain drive technical decisions."**
+**"Safety first, evidence-based, transparent limitations, with seamless human oversight."**
 
 Always prioritize:
-1. User needs over technical elegance
-2. Working software over perfect documentation
-3. Stakeholder feedback over assumptions
-4. Domain modeling over technical implementation
-5. Security and quality over speed of delivery
+1. **User safety** over all other considerations (features, engagement, technical elegance)
+2. **Evidence-based DBT content** over innovative but unvalidated approaches
+3. **Crisis detection accuracy** over feature completeness
+4. **Transparent AI limitations** over user engagement optimization
+5. **Human oversight integration** over autonomous AI decision-making
+6. **Structured decision pathways** over conversational AI flexibility
+
+## Crisis Detection and Safety Requirements
+
+### Crisis Detection Triggers
+- **Intensity Level 8+** (on 1-10 scale) triggers safety plan activation
+- **Crisis keywords** (self-harm, suicidal ideation) bypass normal flow
+- **Maladaptive language patterns** ("always", "never", "everyone", "no one") flagged
+- **System uncertainty** about appropriate skills triggers human escalation
+
+### Safety Plan Integration
+- **Required during registration** before accessing any skills
+- **Rutgers DBT Adult Crisis Plan** template as foundation
+- **Warning signs and coping strategies** required (minimum 1 and 3 respectively)
+- **Support contacts** highly recommended but not blocking
+- **Crisis activation** bypasses decision tree and goes directly to safety plan
+
+### Clinical Validation Requirements
+- Each decision point must reference **DBT literature**
+- Skill recommendations must follow **evidence-based protocols**
+- Crisis detection must meet **clinical safety standards**
+- Coaching content must align with **DBT therapy principles**
+
+## Distress Tolerance Module (MVP Focus)
+
+### Core Skills (Evidence-Based)
+- **TIPP**: Temperature, Intense Exercise, Paced Breathing, Paired Muscle Relaxation
+- **STOP**: Stop, Take a step back, Observe, Proceed with wise mind
+- **Distraction**: Various techniques based on context and preferences
+- **Self-Soothing**: Sensory-based coping strategies
+- **IMPROVE**: Imagery, Meaning, Prayer, Relaxation, One thing, Vacation, Encouragement
+
+### Decision Tree Structure (from docs/wiki/dbt-distress-tolerance-tree.md)
+1. **Crisis check** (intensity 8+ or keywords) → Safety plan
+2. **Situation assessment** (impulsive urges, emotional overwhelm, physical crisis, mixed)
+3. **Context refinement** (time available, privacy, past successful skills)
+4. **Specific skill recommendation** with context-aware coaching
+5. **Post-skill assessment** and follow-up guidance
+
+### Skill Personalization
+- **DBT experience** assessment
+- **Physical limitations** and accessibility needs
+- **Environment considerations** (work, home, public)
+- **Preference tracking** (movement vs. stillness, duration preferences)
+- **Success tracking** for future recommendations
 
 ## Flet Testing Guidelines
 

@@ -60,7 +60,14 @@ class TestOpenAIIntegration:
         # Setup mock
         mock_client = Mock()
         mock_openai_class.return_value = mock_client
-        mock_client.chat.completions.create.return_value = Mock(**mock_openai_response)
+        # Create proper OpenAI response structure
+        mock_response = Mock()
+        mock_response.choices = [Mock()]
+        mock_response.choices[0].message = Mock()
+        mock_response.choices[0].message.content = mock_openai_response["choices"][0][
+            "message"
+        ]["content"]
+        mock_client.chat.completions.create.return_value = mock_response
 
         # Import and use
         import openai

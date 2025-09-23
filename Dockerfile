@@ -7,17 +7,18 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Copy dependency files
+# Copy dependency files first for better caching
 COPY pyproject.toml ./
 COPY uv.lock* ./
 
-# Install dependencies
-RUN uv sync --no-cache
+# Install dependencies first (this layer will be cached)
+RUN uv sync --frozen --no-cache
 
 # Copy source code
 COPY . .

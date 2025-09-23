@@ -5,7 +5,7 @@ Unit tests for configuration management.
 import os
 import pytest
 from unittest.mock import patch
-from src.config import OPENAI_API_KEY, DATABASE_URL
+from src.config import DATABASE_URL
 
 
 class TestConfig:
@@ -13,7 +13,12 @@ class TestConfig:
 
     def test_openai_api_key_from_environment(self, test_environment):
         """Test that OpenAI API key is loaded from environment."""
-        assert OPENAI_API_KEY == "test-key"
+        # Reload config module to pick up test environment
+        import importlib
+        import src.config
+
+        importlib.reload(src.config)
+        assert src.config.OPENAI_API_KEY == "test-key"
 
     def test_database_url_default(self, test_environment):
         """Test database URL uses default when not set."""

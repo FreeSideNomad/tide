@@ -120,6 +120,9 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
+      - name: Install Playwright browsers
+        run: uv run playwright install --with-deps chromium
+
       - name: Start application with docker-compose
         env:
           OPENAI_API_KEY: "test-key"
@@ -129,36 +132,42 @@ jobs:
           docker compose up -d app
           sleep 15
 
-      - name: Run E2E tests
+      - name: Run E2E tests with Playwright
         env:
           OPENAI_API_KEY: "test-key"
         run: uv run pytest tests/e2e/ -v
+
+      - name: Upload E2E screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-screenshots
+          path: tests/e2e/screenshots/
 
       - name: Stop services
         if: always()
         run: docker compose down
 
-  # TODO: Re-enable after resolving Docker test container timeout issues
-  # build-and-test-docker:
-  #   name: Docker Build & Test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  build-and-test-docker:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-  #     - name: Build Docker image
-  #       run: docker build -t tide:test .
+      - name: Build Docker image
+        run: docker build -t tide:test .
 
-  #     - name: Test Docker image
-  #       env:
-  #         OPENAI_API_KEY: "test-key"
-  #       run: |
-  #         docker compose -f docker-compose.yml up -d postgres
-  #         sleep 15
-  #         docker compose -f docker-compose.yml --profile test run --rm test
-  #         docker compose down
+      - name: Test Docker image
+        env:
+          OPENAI_API_KEY: "test-key"
+        run: |
+          docker compose -f docker-compose.yml up -d postgres
+          sleep 15
+          docker compose -f docker-compose.yml --profile test run --rm test
+          docker compose down
 
   security-scan:
     name: Security Scanning

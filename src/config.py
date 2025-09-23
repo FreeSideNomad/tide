@@ -30,3 +30,23 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 # Application Configuration
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+
+
+class Config:
+    """Configuration class for Tide application."""
+
+    # Database Configuration
+    DATABASE_URL = DATABASE_URL
+    DEBUG_MODE = DEBUG
+
+    # OAuth Configuration
+    GOOGLE_CLIENT_ID = GOOGLE_CLIENT_ID
+    GOOGLE_CLIENT_SECRET = GOOGLE_CLIENT_SECRET
+    GOOGLE_REDIRECT_URI = GOOGLE_REDIRECT_URI
+
+    # Session Configuration
+    SESSION_SECRET_KEY = SESSION_SECRET_KEY
+    REDIS_URL = REDIS_URL
+
+    # Application Configuration
+    ENVIRONMENT = ENVIRONMENT

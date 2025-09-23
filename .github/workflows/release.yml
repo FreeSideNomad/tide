@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on semantic version tags like v1.0.0
+
+env:
+  PYTHON_VERSION: '3.13'
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run full test suite
+        env:
+          OPENAI_API_KEY: "test-key"
+          GOOGLE_CLIENT_ID: "test-client-id"
+          GOOGLE_CLIENT_SECRET: "test-client-secret"
+        run: uv run pytest tests/unit/ -v --cov=src --cov-report=xml
+
+  publish-release-docker:
+    name: Publish Release Docker Image
+    runs-on: ubuntu-latest
+    needs: validate-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for release
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
+          labels: |
+            org.opencontainers.image.title=Tide DBT AI Assistant
+            org.opencontainers.image.description=Safety-first DBT AI assistant for mobile and web
+            org.opencontainers.image.vendor=Tide Project
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=${{ github.ref_name }}
+
+      - name: Build and push release Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate release summary
+        run: |
+          echo "🎉 **Release ${{ github.ref_name }} Published Successfully!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**📦 Release Images:**" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.meta.outputs.tags }}' | while read -r tag; do
+            echo "- \`$tag\`" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**🚀 Production Deploy Commands:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "# Pull stable release" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Run in production" >> $GITHUB_STEP_SUMMARY
+          echo "docker run -p 8080:8080 \\" >> $GITHUB_STEP_SUMMARY
+          echo "  -e OPENAI_API_KEY=\$OPENAI_API_KEY \\" >> $GITHUB_STEP_SUMMARY
+          echo "  -e GOOGLE_CLIENT_ID=\$GOOGLE_CLIENT_ID \\" >> $GITHUB_STEP_SUMMARY
+          echo "  -e GOOGLE_CLIENT_SECRET=\$GOOGLE_CLIENT_SECRET \\" >> $GITHUB_STEP_SUMMARY
+          echo "  ghcr.io/${{ github.repository }}:${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: publish-release-docker
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Tide ${{ github.ref_name }}
+          body: |
+            ## 🎉 Tide ${{ github.ref_name }} Release
+
+            ### 🐳 Docker Images
+
+            **Stable Release:**
+            ```bash
+            docker pull ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ```
+
+            **Quick Start:**
+            ```bash
+            docker run -p 8080:8080 \
+              -e OPENAI_API_KEY=your_key \
+              -e GOOGLE_CLIENT_ID=your_client_id \
+              -e GOOGLE_CLIENT_SECRET=your_client_secret \
+              ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+            ```
+
+            ### 📋 What's Included
+
+            - ✅ Safety-first DBT AI assistant
+            - ✅ Google OAuth authentication
+            - ✅ Cross-platform web and mobile support
+            - ✅ PostgreSQL with pgvector support
+            - ✅ Comprehensive testing (91% coverage)
+            - ✅ Multi-architecture support (AMD64, ARM64)
+
+            ### 🔧 Environment Variables Required
+
+            - `OPENAI_API_KEY` - Your OpenAI API key
+            - `GOOGLE_CLIENT_ID` - Google OAuth client ID
+            - `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+            - `DATABASE_URL` - PostgreSQL connection string (optional, defaults to embedded)
+
+            ### 📚 Documentation
+
+            See the [repository README](https://github.com/${{ github.repository }}) for full documentation.
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

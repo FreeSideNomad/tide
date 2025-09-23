@@ -18,6 +18,9 @@ from src.config import (
     GOOGLE_REDIRECT_URI,
 )
 from src.auth.oauth import GoogleOAuthService, CSRFError
+from src.services.user_service import UserService
+from src.database.models import AuthenticationProvider
+from src.database.connection import initialize_database
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +37,7 @@ class AuthServer:
         self.port = port
         self.app = FastAPI(title="Tide Auth Server")
         self.oauth_service = GoogleOAuthService()
+        self.user_service = UserService()
         self.server = None
         self.server_thread = None
 
@@ -42,6 +46,13 @@ class AuthServer:
 
         # Store completed authentication results
         self.auth_results: Dict[str, Dict[str, Any]] = {}
+
+        # Initialize database on startup
+        try:
+            initialize_database()
+            logger.info("✅ Database initialized successfully")
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize database: {e}")
 
         self._setup_routes()
 
@@ -124,8 +135,60 @@ class AuthServer:
 
                 # Exchange code for tokens
                 logger.info("🔄 Exchanging code for tokens...")
-                user_info = await self._exchange_code_for_tokens(code)
-                logger.info(f"✅ Got user info: {user_info.get('name', 'Unknown')}")
+                oauth_user_info = await self._exchange_code_for_tokens(code)
+                logger.info(
+                    f"✅ Got OAuth user info: {oauth_user_info.get('name', 'Unknown')}"
+                )
+
+                # Create or retrieve user profile in database
+                logger.info("🔄 Creating/retrieving user profile in database...")
+                try:
+                    user, is_new_user = self.user_service.get_or_create_user_from_oauth(
+                        oauth_user_info, AuthenticationProvider.GOOGLE
+                    )
+
+                    if is_new_user:
+                        logger.info(
+                            f"✅ Created new user profile: {user.user_id} ({user.email_address})"
+                        )
+                    else:
+                        logger.info(
+                            f"✅ Retrieved existing user profile: {user.user_id} ({user.email_address})"
+                        )
+
+                    # Prepare user info for session (combine OAuth and database data)
+                    user_info = {
+                        "user_id": user.user_id,
+                        "email": user.email_address,
+                        "name": user.display_name,
+                        "picture": user.profile_image_url,
+                        "provider": user.authentication_provider.value,
+                        "is_new_user": is_new_user,
+                        "last_active": (
+                            user.last_active_date.isoformat()
+                            if user.last_active_date
+                            else None
+                        ),
+                    }
+
+                except ValueError as e:
+                    logger.error(f"❌ Failed to create/retrieve user profile: {e}")
+                    return HTMLResponse(
+                        content=self._create_error_page(
+                            f"User profile error: {str(e)}"
+                        ),
+                        status_code=500,
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"❌ Unexpected error during user profile creation: {e}"
+                    )
+                    return HTMLResponse(
+                        content=self._create_error_page(
+                            "An unexpected error occurred during authentication"
+                        ),
+                        status_code=500,
+                    )
 
                 # Store the result
                 session_id = session_data["session_id"]

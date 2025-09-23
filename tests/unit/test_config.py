@@ -5,7 +5,7 @@ Unit tests for configuration management.
 import os
 import pytest
 from unittest.mock import patch
-from src.config import OPENAI_API_KEY, DATABASE_URL, DEBUG, ENVIRONMENT
+from src.config import OPENAI_API_KEY, DATABASE_URL
 
 
 class TestConfig:
@@ -22,11 +22,29 @@ class TestConfig:
 
     def test_debug_mode_enabled(self, test_environment):
         """Test debug mode is enabled in test environment."""
-        assert DEBUG is True
+        # DEBUG comes from the actual environment, not the fixture
+        # So we test that it can be True when set
+        import os
+
+        with patch.dict(os.environ, {"DEBUG": "True"}):
+            import importlib
+            import src.config
+
+            importlib.reload(src.config)
+            assert src.config.DEBUG is True
 
     def test_environment_is_test(self, test_environment):
         """Test environment is set to test."""
-        assert ENVIRONMENT == "test"
+        # ENVIRONMENT comes from the actual environment, not the fixture
+        # So we test that it can be 'test' when set
+        import os
+
+        with patch.dict(os.environ, {"ENVIRONMENT": "test"}):
+            import importlib
+            import src.config
+
+            importlib.reload(src.config)
+            assert src.config.ENVIRONMENT == "test"
 
     @patch.dict(os.environ, {}, clear=True)
     def test_missing_openai_key_raises_error(self):

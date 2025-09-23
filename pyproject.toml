@@ -38,10 +38,12 @@ path = "src"
 
 [dependency-groups]
 dev = [
+    "bandit>=1.8.6",
     "black>=25.9.0",
     "flet[all]==0.28.3",
     "playwright>=1.55.0",
     "ruff>=0.13.1",
+    "safety>=3.6.1",
     "selenium>=4.35.0",
 ]
 

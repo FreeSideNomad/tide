@@ -9,6 +9,7 @@
 - **Target Platforms**: Mobile (iOS/Android) and web browsers prioritizing mobile-first design
 - **Architecture**: Safety-constrained decision trees with NLP enhancement for personalization
 - **Decision Tree Implementation**: JSON structure with rule engine for crisis detection and skill selection
+- **🔐 AUTHENTICATION REQUIREMENT**: **MANDATORY** - All authentication MUST follow Flet's official cookbook at https://flet.dev/docs/cookbook/authentication/ - NO custom authentication solutions allowed
 
 
 ### Core Features
@@ -128,10 +129,9 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 - **Frontend**: Python Flet for cross-platform mobile and web deployment
 - **Database**: PostgreSQL with pgvector for RAG storage
 - **ORM**: SQLAlchemy for maintainability and type safety
-- **Session Management**: Redis for session state and caching with FastAPI session middleware
-- **Authentication Middleware**: FastAPI middleware for automatic route protection and session validation
+- **Session Management**: Follow Flet authentication cookbook session patterns
 - **AI Integration**: OpenAI API with cost management
-- **Authentication**: Google OAuth or Microsoft OAuth with 20-minute sliding window sessions
+- **Authentication**: **MANDATORY** Flet official authentication patterns from https://flet.dev/docs/cookbook/authentication/ (OAuth providers: Google, Microsoft, GitHub, etc.)
 - **Package Management**: uv for fast Python dependency management
 - **Testing**: Pytest with comprehensive test suite (unit, integration, E2E)
 - **Code Quality**: Black (formatting), Ruff (linting), Safety (security), Bandit (security)
@@ -169,12 +169,12 @@ The application follows Domain-Driven Design (DDD) principles with a comprehensi
 - **Eventual Consistency**: New questions automatically become pending for all existing users
 
 ### Authentication Architecture
-- **Middleware-Based Protection**: FastAPI authentication middleware provides automatic route protection
-- **Session-Based Authentication**: Redis-backed sessions with sliding window expiration (20 minutes)
-- **OAuth Integration**: Google and Microsoft OAuth providers for secure external authentication
-- **Public Route Configuration**: Configurable list of routes that bypass authentication requirements
-- **Automatic Redirection**: Unauthenticated requests automatically redirected to login page
-- **User Context Injection**: Authenticated user information available in all protected route handlers
+- **Flet Official Authentication**: **MANDATORY** - Application MUST follow https://flet.dev/docs/cookbook/authentication/ - no custom solutions allowed
+- **OAuth Integration**: Use Flet's official OAuth providers (Google, Microsoft, GitHub, etc.) as documented in cookbook
+- **Session Management**: Follow Flet's session handling patterns and best practices from cookbook
+- **Route Protection**: Implement authentication guards using Flet's recommended patterns
+- **User State Management**: Use Flet's user session and state management as outlined in cookbook
+- **Security Standards**: Adhere to all security recommendations in Flet authentication cookbook
 
 ## GitHub Project Management
 
@@ -569,23 +569,21 @@ Always ensure:
 - **ORM**: SQLAlchemy for database operations
 - **Migrations**: Alembic for database schema management
 
-### Redis Session Management
-- **FastAPI Session Middleware**: Standard FastAPI session management with Redis backend
-- **Session Storage**: Redis for user session state and authentication tokens
-- **Sliding Window Expiration**: 20-minute sessions with automatic extension on activity
-- **Authentication Middleware**: Automatic route protection and session validation
-- **Stateless Architecture**: No sticky sessions required, horizontally scalable
-- **Caching Layer**: Application-level caching for frequently accessed data
-- **Session Lifecycle**: Automatic cleanup of expired sessions
-- **Performance**: Fast in-memory operations for session data
+### Session and State Management
+- **Flet Authentication Patterns**: Follow Flet cookbook session management (https://flet.dev/docs/cookbook/authentication/)
+- **Session Storage**: Use Flet's recommended session storage patterns
+- **Authentication State**: Implement user authentication state using Flet's built-in mechanisms
+- **Route Protection**: Use Flet's authentication guards and protected route patterns
+- **Session Lifecycle**: Follow Flet's session management best practices
+- **Caching Layer**: Application-level caching for frequently accessed data (if needed beyond Flet patterns)
 
 ### Data Storage Strategy
 - **Persistent Domain Data**: User profiles, questionnaire responses, preferences in PostgreSQL
-- **Session State**: Authentication tokens, temporary user state in Redis
+- **Session State**: Follow Flet authentication cookbook patterns for session and user state management
 - **Conversational Data**: Full conversation logs in PostgreSQL tables
 - **Vector Embeddings**: pgvector for similarity search and RAG capabilities
 - **Document Storage**: GitHub wiki with version control, current versions in RAG vectors
-- **Cache Strategy**: Frequently accessed data cached in Redis with TTL
+- **Cache Strategy**: Application-level caching as needed, compatible with Flet authentication patterns
 
 ## Test-Driven Development (TDD) Requirements
 

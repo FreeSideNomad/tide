@@ -6,14 +6,12 @@ Tests secure authentication implementation following Flet cookbook patterns.
 
 import pytest
 import os
-import json
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch, Mock
 import flet as ft
-from cryptography.fernet import Fernet
 
 # Import authentication components
-from src.auth.flet_auth_config import SecureAuthConfig, get_auth_config
-from src.auth.flet_auth_handlers import FletAuthHandler, AuthenticatedApp
+from src.auth.flet_auth_config import SecureAuthConfig
+from src.auth.flet_auth_handlers import FletAuthHandler
 from src.auth.route_protection import RouteProtector, AuthGuard
 from src.auth.flet_auth_ui import GoogleSignInButton, AuthenticationPage
 
@@ -28,19 +26,24 @@ class TestSecureAuthConfig:
             "GOOGLE_CLIENT_ID": "test_client_id",
             "GOOGLE_CLIENT_SECRET": "test_client_secret",
             "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
-            "GOOGLE_REDIRECT_URI": "http://localhost:8000/oauth_callback"
+            "GOOGLE_REDIRECT_URI": "http://localhost:8000/oauth_callback",
         }
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_secure_auth_config_initialization(self):
         """Test secure authentication configuration initialization."""
         config = SecureAuthConfig()
 
         assert config is not None
-        assert hasattr(config, '_encryption_key')
-        assert hasattr(config, '_fernet')
+        assert hasattr(config, "_encryption_key")
+        assert hasattr(config, "_fernet")
 
     @patch.dict(os.environ, {})
     def test_missing_environment_variables_raises_error(self):
@@ -48,18 +51,30 @@ class TestSecureAuthConfig:
         with pytest.raises(ValueError, match="Missing required environment variables"):
             SecureAuthConfig()
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "short"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "short",
+        },
+    )
     def test_short_session_secret_raises_error(self):
         """Test that short session secret raises error."""
-        with pytest.raises(ValueError, match="SESSION_SECRET_KEY must be at least 32 characters"):
+        with pytest.raises(
+            ValueError, match="SESSION_SECRET_KEY must be at least 32 characters"
+        ):
             SecureAuthConfig()
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
-    @patch('src.auth.flet_auth_config.GoogleOAuthProvider')
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
+    @patch("src.auth.flet_auth_config.GoogleOAuthProvider")
     def test_create_google_oauth_provider(self, mock_provider_class):
         """Test Google OAuth provider creation."""
         config = SecureAuthConfig()
@@ -72,12 +87,17 @@ class TestSecureAuthConfig:
         mock_provider_class.assert_called_once_with(
             client_id="test_client_id",
             client_secret="test_client_secret",
-            redirect_url="http://localhost:8000/oauth_callback"
+            redirect_url="http://localhost:8000/oauth_callback",
         )
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_token_encryption_decryption(self):
         """Test token encryption and decryption."""
         config = SecureAuthConfig()
@@ -89,9 +109,14 @@ class TestSecureAuthConfig:
         assert encrypted_token != original_token
         assert decrypted_token == original_token
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_invalid_token_decryption_returns_empty(self):
         """Test that invalid token decryption returns empty string."""
         config = SecureAuthConfig()
@@ -100,9 +125,14 @@ class TestSecureAuthConfig:
 
         assert result == ""
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_storage_key_generation(self):
         """Test storage key generation with proper prefix."""
         config = SecureAuthConfig()
@@ -111,9 +141,14 @@ class TestSecureAuthConfig:
 
         assert key == "tide.auth.tokens"
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_oauth_scopes(self):
         """Test OAuth scopes configuration."""
         config = SecureAuthConfig()
@@ -133,9 +168,14 @@ class TestFletAuthHandler:
         self.mock_page.auth = None
         self.mock_page.client_storage = Mock()
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_auth_handler_initialization(self):
         """Test authentication handler initialization."""
         handler = FletAuthHandler(self.mock_page)
@@ -145,9 +185,14 @@ class TestFletAuthHandler:
         assert self.mock_page.on_login == handler._handle_login_event
         assert self.mock_page.on_logout == handler._handle_logout_event
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_user_not_authenticated_initially(self):
         """Test that user is not authenticated initially."""
         handler = FletAuthHandler(self.mock_page)
@@ -155,9 +200,14 @@ class TestFletAuthHandler:
         assert not handler.is_authenticated()
         assert handler.get_current_user() is None
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_login_event_with_error(self):
         """Test login event handling with error."""
         handler = FletAuthHandler(self.mock_page)
@@ -169,9 +219,14 @@ class TestFletAuthHandler:
         assert handler.current_user is None
         assert not handler.is_authenticated()
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_successful_login_event(self):
         """Test successful login event handling."""
         # Set up mock authentication data
@@ -201,9 +256,14 @@ class TestFletAuthHandler:
         assert handler.is_authenticated()
         assert handler.current_user["email"] == "test@example.com"
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_logout_clears_session(self):
         """Test that logout clears user session."""
         handler = FletAuthHandler(self.mock_page)
@@ -261,7 +321,9 @@ class TestRouteProtector:
     def test_protected_route_access_with_authentication(self):
         """Test protected route access when authenticated."""
         self.mock_auth_handler.is_authenticated.return_value = True
-        self.mock_auth_handler.get_current_user.return_value = {"email": "test@example.com"}
+        self.mock_auth_handler.get_current_user.return_value = {
+            "email": "test@example.com"
+        }
 
         protector = RouteProtector(self.mock_auth_handler)
         protector.add_protected_route("/dashboard")
@@ -375,24 +437,33 @@ class TestAuthenticationPage:
         self.mock_page = Mock(spec=ft.Page)
         self.mock_success_callback = Mock()
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_authentication_page_initialization(self):
         """Test authentication page initialization."""
         auth_page = AuthenticationPage(
-            page=self.mock_page,
-            on_auth_success=self.mock_success_callback
+            page=self.mock_page, on_auth_success=self.mock_success_callback
         )
 
         assert auth_page.page == self.mock_page
         assert auth_page.on_auth_success_callback == self.mock_success_callback
-        assert hasattr(auth_page, 'google_signin_button')
-        assert hasattr(auth_page, 'error_message')
+        assert hasattr(auth_page, "google_signin_button")
+        assert hasattr(auth_page, "error_message")
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_show_error_message(self):
         """Test showing error message."""
         auth_page = AuthenticationPage(self.mock_page)
@@ -402,9 +473,14 @@ class TestAuthenticationPage:
         assert auth_page.error_message.visible
         assert auth_page.error_message.content.value == "Test error"
 
-    @patch.dict(os.environ, {"GOOGLE_CLIENT_ID": "test_client_id",
-                            "GOOGLE_CLIENT_SECRET": "test_client_secret",
-                            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length"})
+    @patch.dict(
+        os.environ,
+        {
+            "GOOGLE_CLIENT_ID": "test_client_id",
+            "GOOGLE_CLIENT_SECRET": "test_client_secret",
+            "SESSION_SECRET_KEY": "test_session_secret_key_32_characters_minimum_length",
+        },
+    )
     def test_hide_error_message(self):
         """Test hiding error message."""
         auth_page = AuthenticationPage(self.mock_page)
@@ -433,7 +509,7 @@ class TestAuthGuard:
         self.mock_auth_handler.is_authenticated.return_value = True
         self.mock_auth_handler.get_current_user.return_value = {
             "name": "Test User",
-            "email": "test@example.com"
+            "email": "test@example.com",
         }
 
         guard = AuthGuard(self.mock_auth_handler)
@@ -478,7 +554,9 @@ class TestAuthGuard:
         mock_component = Mock()
 
         guard = AuthGuard(self.mock_auth_handler)
-        result = guard.create_protected_component(mock_component, show_auth_prompt=False)
+        result = guard.create_protected_component(
+            mock_component, show_auth_prompt=False
+        )
 
         assert result != mock_component
         assert isinstance(result, ft.Container)
@@ -486,7 +564,9 @@ class TestAuthGuard:
     def test_protected_action_when_authenticated(self):
         """Test protected action when authenticated."""
         self.mock_auth_handler.is_authenticated.return_value = True
-        self.mock_auth_handler.get_current_user.return_value = {"email": "test@example.com"}
+        self.mock_auth_handler.get_current_user.return_value = {
+            "email": "test@example.com"
+        }
 
         mock_action = Mock(return_value="action_result")
         mock_action.__name__ = "test_action"  # Add function name attribute

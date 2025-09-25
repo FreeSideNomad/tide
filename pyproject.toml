@@ -9,6 +9,7 @@ authors = [
 ]
 dependencies = [
   "alembic>=1.16.5",
+  "cryptography>=46.0.1",
   "fastapi>=0.117.1",
   "flet==0.28.3",
   "httpx>=0.28.1",

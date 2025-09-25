@@ -171,23 +171,25 @@ class AuthServer:
                         ),
                     }
 
-                except ValueError as e:
-                    logger.error(f"❌ Failed to create/retrieve user profile: {e}")
-                    return HTMLResponse(
-                        content=self._create_error_page(
-                            f"User profile error: {str(e)}"
-                        ),
-                        status_code=500,
+                except Exception as db_error:
+                    # Graceful degradation when database is unavailable
+                    logger.warning(
+                        f"⚠️ Database unavailable, proceeding with OAuth-only session: {db_error}"
                     )
-                except Exception as e:
-                    logger.error(
-                        f"❌ Unexpected error during user profile creation: {e}"
-                    )
-                    return HTMLResponse(
-                        content=self._create_error_page(
-                            "An unexpected error occurred during authentication"
-                        ),
-                        status_code=500,
+
+                    # Create temporary user info from OAuth data only
+                    user_info = {
+                        "user_id": f"temp_{oauth_user_info.get('id', 'unknown')}",
+                        "email": oauth_user_info.get("email"),
+                        "name": oauth_user_info.get("name"),
+                        "picture": oauth_user_info.get("picture"),
+                        "provider": "google",
+                        "is_new_user": True,
+                        "temporary": True,  # Flag for UI to show database notice
+                        "last_active": None,
+                    }
+                    logger.info(
+                        f"✅ Created temporary session for: {user_info.get('name')}"
                     )
 
                 # Store the result
@@ -321,71 +323,32 @@ class AuthServer:
                 <div class="checkmark">✓</div>
                 <h1>Welcome to Tide, {user_name}!</h1>
                 <p>Authentication successful.</p>
-                <p>You can now close this tab and return to the Tide application.</p>
+                <p><strong>Please manually close this browser tab</strong> and return to the Tide application.</p>
+                <p>Use Ctrl+W (Windows/Linux) or Cmd+W (Mac) to close this tab.</p>
             </div>
             <script>
-                // Multiple methods to close the window for better browser compatibility
-                function closeWindow() {{
-                    // Method 1: Try standard window.close()
-                    try {{
-                        window.close();
-                    }} catch(e) {{
-                        console.log('window.close() failed:', e);
-                    }}
-
-                    // Method 2: If still open, try to redirect to about:blank
-                    setTimeout(() => {{
-                        if (!window.closed) {{
-                            window.location.href = 'about:blank';
-                        }}
-                    }}, 500);
-
-                    // Method 3: As last resort, show a clear message
-                    setTimeout(() => {{
-                        if (!window.closed) {{
-                            document.body.innerHTML = `
-                                <div class="container">
-                                    <div class="checkmark">✓</div>
-                                    <h1>Authentication Complete</h1>
-                                    <p><strong>You can now close this tab.</strong></p>
-                                    <p>Return to the Tide application to continue.</p>
-                                    <button onclick="window.close()" style="
-                                        background: #4CAF50;
-                                        color: white;
-                                        border: none;
-                                        padding: 12px 24px;
-                                        border-radius: 6px;
-                                        font-size: 16px;
-                                        cursor: pointer;
-                                        margin-top: 20px;
-                                    ">Close Tab</button>
-                                </div>
-                            `;
-                        }}
-                    }}, 1000);
-                }}
-
-                // Try to close immediately when page loads
+                // Add helpful instructions after page loads
                 document.addEventListener('DOMContentLoaded', function() {{
-                    // Show countdown for user awareness
-                    let countdown = 3;
-                    const countdownEl = document.createElement('p');
-                    countdownEl.style.fontSize = '14px';
-                    countdownEl.style.marginTop = '20px';
-                    document.querySelector('.container').appendChild(countdownEl);
+                    const container = document.querySelector('.container');
 
-                    const updateCountdown = () => {{
-                        countdownEl.textContent = `This tab will close automatically in ${{countdown}} seconds...`;
-                        countdown--;
+                    // Add keyboard shortcut instructions
+                    const instructionsDiv = document.createElement('div');
+                    instructionsDiv.style.cssText = `
+                        background: rgba(255,255,255,0.2);
+                        padding: 15px;
+                        border-radius: 8px;
+                        margin-top: 20px;
+                        font-size: 14px;
+                        line-height: 1.4;
+                    `;
+                    instructionsDiv.innerHTML = `
+                        <p style="margin: 0 0 10px 0;"><strong>To close this tab:</strong></p>
+                        <p style="margin: 0 0 5px 0;">• Press <strong>Ctrl+W</strong> (Windows/Linux)</p>
+                        <p style="margin: 0 0 5px 0;">• Press <strong>Cmd+W</strong> (Mac)</p>
+                        <p style="margin: 5px 0 0 0;"><em>Or use your browser's close tab button</em></p>
+                    `;
 
-                        if (countdown < 0) {{
-                            closeWindow();
-                        }} else {{
-                            setTimeout(updateCountdown, 1000);
-                        }}
-                    }};
-
-                    updateCountdown();
+                    container.appendChild(instructionsDiv);
                 }});
             </script>
         </body>

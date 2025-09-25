@@ -93,35 +93,97 @@ The wiki repository URL: https://github.com/FreeSideNomad/tide/wiki
 
 **🚨 MANDATORY: NO CODE WITHOUT EXPLICIT STAKEHOLDER APPROVAL**
 
+### Security Decision Authority
+
+**CRITICAL**: Claude Code is **PROHIBITED** from making security or architecture decisions independently. All security-impacting decisions require:
+
+1. **ADR Process**: Architecture Decision Records (ADRs) via GitHub issues
+2. **Stakeholder Approval**: Explicit approval from required stakeholders
+3. **Implementation Block**: Features are BLOCKED until ADR approval
+
+#### ADR-Required Decisions
+- **Authentication & Authorization**: OAuth, session management, token storage
+- **Data Protection**: Encryption, PII handling, healthcare data compliance
+- **Architecture Changes**: Database design, API security, infrastructure
+- **Safety Features**: Crisis detection, human oversight, emergency procedures
+- **Third-Party Integrations**: Security-sensitive library selections
+
+#### Implementation Rules
+- ❌ **NO security decisions** without stakeholder consultation
+- ❌ **NO architecture changes** without ADR approval
+- ❌ **NO implementation** of security features without authorization
+- ✅ **ASK for clarification** when user stories lack security specifications
+- ✅ **CREATE ADRs** for all security and architecture decisions
+- ✅ **WAIT for approval** before implementing dependent features
+
+**Current Blocking ADRs**:
+- [ADR-0001 Token Storage](https://github.com/FreeSideNomad/tide/issues/13): OAuth token storage architecture - PENDING APPROVAL
+
 ### 4-Phase Development Workflow
 
 **Phase 1: Planning & Collaboration**
 1. Collaborate on .md files (documentation and requirements)
-2. Stakeholder review and feedback on .md files
-3. **Wait for explicit approval** before proceeding
+2. **Security Review**: Identify any security/architecture decisions needed
+3. **Create ADRs**: For security/architecture decisions via GitHub issues
+4. **Stakeholder Review**: Wait for explicit approval on .md files AND ADRs
+5. **Wait for approval** before proceeding
 
 **Phase 2: Issue Creation**
 4. Create GitHub Issues (Epic, Feature, User Story) based on approved .md files
-5. Issue-driven development approach
+5. **Link to ADRs**: Reference approved ADRs in implementation issues
+6. Issue-driven development approach
 
 **Phase 3: Implementation Cycle (Per User Story)**
-6. **Get explicit approval** for each user story before starting
-7. Create feature branch for specific user story
-8. Implement & test until all tests pass
-9. Commit & merge to remote main, fix build issues
+6. **Verify ADR Approval**: Ensure all dependent ADRs are approved
+7. **Get explicit approval** for each user story before starting
+8. Create feature branch for specific user story
+9. **Implement per ADR requirements**: Follow approved architecture decisions
+10. Implement & test until all tests pass
+11. Commit & merge to remote main, fix build issues
 
 **Phase 4: Validation & Iteration**
-10. Stakeholder manual testing
-11. Create GitHub issues for problems found
-12. Fix & merge code
-13. Repeat until user story complete
-14. Move to next user story only after completion
+12. Stakeholder manual testing
+13. **Security validation**: Verify ADR compliance
+14. Create GitHub issues for problems found
+15. Fix & merge code
+16. Repeat until user story complete
+17. Move to next user story only after completion
 
 ### Essential Rules
 - ✅ Collaborate on .md files freely
+- ✅ **Create ADRs** for security/architecture decisions
+- ✅ **Ask for clarification** on incomplete requirements
+- ❌ **Never make security decisions** without stakeholder consultation
 - ❌ Never implement code without explicit stakeholder approval
+- ❌ **Never implement features** dependent on unapproved ADRs
 - ❌ Never create GitHub issues without approved requirements
 - ❌ Never merge code without passing tests and build validation
+
+### ADR (Architecture Decision Record) Process
+
+**Location**: All ADRs created as GitHub issues using the "ADR - Architecture Decision Record" issue template
+
+**Required Stakeholders** (per ADR):
+- **Product Owner**: Business requirements and user impact
+- **Technical Lead**: Technical architecture review
+- **Security Reviewer**: Security implications assessment
+- **Compliance Reviewer**: Healthcare/privacy compliance (if applicable)
+
+**ADR Workflow**:
+1. **Identify Decision**: Security or architecture decision needed
+2. **Create GitHub Issue**: Use ADR template, assign stakeholders
+3. **Stakeholder Review**: Discussion via issue comments
+4. **Approval**: All required stakeholders must approve
+5. **Implementation**: Proceed only after issue closed as "Accepted"
+
+**ADR Examples**:
+- [ADR-0001 Token Storage Architecture](https://github.com/FreeSideNomad/tide/issues/13)
+- Authentication provider selection
+- Database security configurations
+- API encryption requirements
+- Session management approaches
+
+See detailed process: [docs/STAKEHOLDER_APPROVAL_PROCESS.md](/docs/STAKEHOLDER_APPROVAL_PROCESS.md)
 
 ## Technology Stack
 

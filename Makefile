@@ -13,8 +13,10 @@ help:
 	@echo "  make setup-hooks  Setup Git hooks"
 	@echo ""
 	@echo "Development:"
-	@echo "  make dev          Start development server"
+	@echo "  make dev          Start development server (no database)"
+	@echo "  make dev-full     Start with PostgreSQL database + app"
 	@echo "  make dev-docker   Start with Docker Compose"
+	@echo "  make stop         Stop all services"
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  make quick-check  Quick validation (fast)"
@@ -52,6 +54,34 @@ dev:
 	@echo "🚀 Starting development server..."
 	uv run flet run --web --port 8080
 
+dev-full:
+	@echo "🚀 Starting full development stack (PostgreSQL + Application)..."
+	@echo "📋 Checking environment..."
+	@if [ -z "$$OPENAI_API_KEY" ]; then \
+		echo "⚠️  OPENAI_API_KEY not set - please add it to .env file"; \
+		echo "💡 Create .env file with: OPENAI_API_KEY=your_key_here"; \
+		exit 1; \
+	fi
+	@echo "🐳 Starting PostgreSQL database..."
+	@docker-compose up -d postgres
+	@echo "⏳ Waiting for database to be ready..."
+	@for i in {1..30}; do \
+		if docker-compose exec -T postgres pg_isready -U tide_user -d tide_db >/dev/null 2>&1; then \
+			echo "✅ PostgreSQL is ready!"; \
+			break; \
+		fi; \
+		echo "   Waiting for PostgreSQL... ($$i/30)"; \
+		sleep 2; \
+	done
+	@echo "🔧 Setting database configuration..."
+	@export DATABASE_URL="postgresql://tide_user:tide_password@localhost:5432/tide_db"
+	@echo "🚀 Starting Tide application..."
+	@echo "📱 App will be available at: http://127.0.0.1:8080"
+	@echo "🗄️  Database: postgresql://tide_user:tide_password@localhost:5432/tide_db"
+	@echo ""
+	@DATABASE_URL="postgresql://tide_user:tide_password@localhost:5432/tide_db" \
+	 PYTHONPATH=. uv run python src/main.py
+
 dev-docker:
 	@echo "🐳 Starting development with Docker..."
 	@if [ -z "$$OPENAI_API_KEY" ]; then \
@@ -59,6 +89,11 @@ dev-docker:
 		export OPENAI_API_KEY="test-key"; \
 	fi
 	docker-compose up
+
+stop:
+	@echo "🛑 Stopping all services..."
+	@docker-compose down
+	@echo "✅ All services stopped"
 
 # Code quality commands
 quick-check:
